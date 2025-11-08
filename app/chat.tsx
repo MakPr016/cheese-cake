@@ -18,7 +18,7 @@ import { Message } from '@/src/types';
 import { MessageBubble } from '@/src/components/MessageBubble';
 import { VoiceInput } from '@/src/components/VoiceInput';
 import { PolarisService } from '@/src/services/PolarisService';
-import { getApiKey, getChatHistory, saveChatHistory } from '@/src/utils/storage';
+import { getApiKey, getChatHistory, saveMessage, clearChatHistory } from '@/src/utils/storage';
 
 export default function ChatScreen() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -75,6 +75,8 @@ export default function ChatScreen() {
     setLoading(true);
 
     try {
+      await saveMessage(userMessage);
+      
       const response = await polarisService.chat(userMessage.content, messages);
 
       const assistantMessage: Message = {
@@ -85,7 +87,7 @@ export default function ChatScreen() {
 
       const finalMessages = [...updatedMessages, assistantMessage];
       setMessages(finalMessages);
-      await saveChatHistory(finalMessages);
+      await saveMessage(assistantMessage);
     } catch (error) {
       Alert.alert('Error', error instanceof Error ? error.message : 'Failed to get response');
     } finally {
@@ -104,7 +106,7 @@ export default function ChatScreen() {
           style: 'destructive',
           onPress: async () => {
             setMessages([]);
-            await saveChatHistory([]);
+            await clearChatHistory();
           },
         },
       ]

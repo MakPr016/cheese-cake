@@ -43,22 +43,18 @@ app.post('/api/messages', async (req, res) => {
       .values({ userId, role, content })
       .returning();
 
-    const messageCount = await db
+    const allMessages = await db
       .select()
       .from(messages)
-      .where(eq(messages.userId, userId));
+      .where(eq(messages.userId, userId))
+      .orderBy(desc(messages.createdAt));
 
-    if (messageCount.length > 20) {
-      const oldestMessages = await db
-        .select()
-        .from(messages)
-        .where(eq(messages.userId, userId))
-        .orderBy(messages.createdAt)
-        .limit(messageCount.length - 20);
-
-      if (oldestMessages.length > 0) {
-        const oldestId = oldestMessages[oldestMessages.length - 1].id;
-        await db.delete(messages).where(eq(messages.id, oldestId));
+    if (allMessages.length > 20) {
+      const messagesToDelete = allMessages.slice(20);
+      const idsToDelete = messagesToDelete.map(msg => msg.id);
+      
+      for (const id of idsToDelete) {
+        await db.delete(messages).where(eq(messages.id, id));
       }
     }
 
