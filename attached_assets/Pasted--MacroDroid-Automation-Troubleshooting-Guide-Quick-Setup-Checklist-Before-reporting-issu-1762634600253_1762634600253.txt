@@ -1,0 +1,310 @@
+# MacroDroid Automation - Troubleshooting Guide
+
+## Quick Setup Checklist
+
+Before reporting issues, verify:
+
+- [ ] MacroDroid app installed from Play Store
+- [ ] Accessibility Service enabled for MacroDroid
+- [ ] MacroDroid Cloud account created and logged in
+- [ ] Webhook triggers enabled in MacroDroid settings
+- [ ] Each macro has been created and saved
+- [ ] Webhook IDs copied correctly to your code
+- [ ] Internet connection active
+- [ ] Battery optimization disabled for MacroDroid
+
+## Common Issues & Solutions
+
+### 1. Webhook Not Triggering
+
+**Symptoms:** Fetch call succeeds but nothing happens on device
+
+**Solutions:**
+- Check MacroDroid app is running (not force-closed)
+- Verify internet connection
+- Log into MacroDroid Cloud account again
+- Check webhook URL is correct (no typos)
+- Test webhook directly in MacroDroid app (use Test button)
+- Disable battery optimization for MacroDroid:
+  - Settings → Apps → MacroDroid → Battery → Don't optimize
+
+### 2. Actions Execute But Fail Silently
+
+**Symptoms:** Webhook triggers but action doesn't work
+
+**Solutions:**
+- Verify Accessibility Service is enabled:
+  - Settings → Accessibility → MacroDroid → ON
+- Grant all permissions MacroDroid requests
+- For "tap" actions: Enable "UI Interaction" in MacroDroid settings
+- For "type" actions: Enable keyboard permissions
+- Add a 1-2 second wait before the action
+- Check if target app is installed
+
+### 3. Browser/Apps Won't Open
+
+**Symptoms:** open_app or open_browser doesn't work
+
+**Solutions:**
+- Verify app is installed
+- Use correct package name (see AutomationService.ts mapping)
+- Add "Launch Application" action in MacroDroid macro
+- Grant MacroDroid permission to launch apps:
+  - Settings → Apps → MacroDroid → Permissions → Display over other apps
+- Try using "Open App" from MacroDroid's action list instead of shell command
+
+### 4. Text Not Typing
+
+**Symptoms:** type action doesn't enter text
+
+**Solutions:**
+- Add 1-2 second wait BEFORE typing action
+- Ensure text field is focused (add tap action first)
+- Use "Set Text/Value" action in MacroDroid (not "Type")
+- Enable keyboard permissions for MacroDroid
+- Check if special characters need escaping
+- Try "Paste Text" action instead
+
+### 5. Variables Not Working
+
+**Symptoms:** Dynamic data (like search query) not passed to macro
+
+**Solutions:**
+- In MacroDroid macro, use variables:
+  - Add action → Set Variable → From webhook data
+  - Reference variable in actions as {variable_name}
+- Webhook payload must match variable names
+- Example:
+  ```json
+  // In your code
+  { "text": "pizza places" }
+  
+  // In MacroDroid
+  Set variable "search_query" from webhook field "text"
+  Then use {search_query} in actions
+  ```
+
+### 6. Rate Limiting / Timeout
+
+**Symptoms:** Some webhooks work, others timeout
+
+**Solutions:**
+- MacroDroid has rate limits (check your plan)
+- Add delay between rapid webhook calls
+- Increase timeout in AutomationService (default 10s)
+- Check MacroDroid logs for errors
+- Free plan: ~50 webhook calls/day
+
+## Best Practices
+
+### Macro Design
+
+1. **Always Add Wait Steps**
+   - After launching apps: 2-3 seconds
+   - Before typing: 1-2 seconds
+   - After taps: 500ms
+
+2. **Use Constraints**
+   - Add "Screen On" constraint to prevent execution when screen is off
+   - Add "App Running" constraint for app-specific actions
+
+3. **Error Handling**
+   - Add "If" conditions to check if action succeeded
+   - Use "Try/Catch" actions for critical steps
+   - Add notification for failed actions
+
+4. **Variables**
+   - Always validate webhook variables before using
+   - Set default values for optional parameters
+   - Use variable arrays for multiple parameters
+
+### Code Best Practices
+
+1. **Validation**
+   ```typescript
+   // Always validate steps before execution
+   const validSteps = steps.filter(step => 
+     automationService.validateStep(step)
+   );
+   ```
+
+2. **Error Recovery**
+   ```typescript
+   try {
+     await automationService.executeStep(step);
+   } catch (error) {
+     // Log error
+     // Try alternative action
+     // Notify user
+   }
+   ```
+
+3. **Progressive Enhancement**
+   ```typescript
+   // Start with simple actions
+   // Add complexity gradually
+   // Test each step individually
+   ```
+
+### Testing Strategy
+
+1. **Test Individual Webhooks First**
+   - Use MacroDroid's built-in test button
+   - Verify each action works independently
+   - Check logs for errors
+
+2. **Test Simple Sequences**
+   - 2-3 step automations first
+   - Gradually increase complexity
+   - Verify timing between steps
+
+3. **Test Edge Cases**
+   - App not installed
+   - No internet connection
+   - Screen locked
+   - Different Android versions
+
+## Performance Optimization
+
+### Reduce Latency
+
+1. **Batch Related Actions**
+   - Combine multiple taps in one macro if possible
+   - Use MacroDroid's "Multiple Actions" feature
+
+2. **Optimize Wait Times**
+   - Don't use fixed 5s waits
+   - Use "Wait Until" conditions when possible
+   - Test minimum required wait time
+
+3. **Cache Results**
+   - Store frequently used data in variables
+   - Reduce redundant webhook calls
+
+### Battery Optimization
+
+1. **Disable Optimization for MacroDroid**
+   - Settings → Battery → App optimization
+   - Set MacroDroid to "Don't optimize"
+
+2. **Use Constraints Wisely**
+   - Add "Battery Level" constraints
+   - Disable unnecessary logging
+
+## Debugging Tools
+
+### MacroDroid Logs
+
+Access via: MacroDroid → Settings → View Log
+
+Look for:
+- Webhook received events
+- Action execution results
+- Error messages
+- Variable values
+
+### App Logs
+
+```typescript
+// Add detailed logging
+console.log('Executing step:', step);
+console.log('Webhook URL:', url);
+console.log('Payload:', payload);
+console.log('Response:', await response.text());
+```
+
+### Network Debugging
+
+Use browser DevTools or React Native Debugger to inspect:
+- Fetch requests
+- Response status codes
+- Response bodies
+- Request timing
+
+## Advanced Features
+
+### Conditional Actions
+
+```typescript
+// In MacroDroid macro
+If {app_name} = "YouTube" then
+  Launch YouTube
+  Wait 2 seconds
+  Tap Search button
+Else if {app_name} = "Chrome" then
+  Launch Chrome
+End If
+```
+
+### Chained Webhooks
+
+```typescript
+// Trigger multiple macros in sequence
+await fetch(webhookUrl1);
+await delay(1000);
+await fetch(webhookUrl2);
+```
+
+### Error Notifications
+
+```typescript
+// In MacroDroid macro
+Add constraint: If action failed
+  Send notification: "Automation failed at step X"
+```
+
+## Migration Path to Native Solution
+
+Once you validate MacroDroid works for your use case:
+
+1. **Identify Most-Used Actions**
+   - Track which webhooks are called most
+   - Prioritize these for native implementation
+
+2. **Learn Android Basics**
+   - Follow Expo Development Build docs
+   - Create simple native module
+   - Implement one action natively
+
+3. **Gradual Migration**
+   - Keep MacroDroid as fallback
+   - Migrate one action at a time
+   - Test thoroughly before removing MacroDroid
+
+4. **Final Switch**
+   - Remove MacroDroid dependency
+   - Use Accessibility Service directly
+   - Better performance and reliability
+
+## Resources
+
+- **MacroDroid Forum:** https://www.macrodroid.com/forums/
+- **MacroDroid Wiki:** https://wiki.macrodroid.com/
+- **Expo Dev Builds:** https://docs.expo.dev/develop/development-builds/introduction/
+- **Android Accessibility:** https://developer.android.com/guide/topics/ui/accessibility/service
+
+## Support
+
+If you're still stuck:
+
+1. Check MacroDroid logs for specific errors
+2. Test webhook manually in browser
+3. Verify all permissions granted
+4. Ask on MacroDroid forums (very active community)
+5. Consider posting logs when asking for help
+
+## Quick Wins
+
+Start with these simple automations to build confidence:
+
+1. **Open Browser** - Easiest, always works
+2. **Go Home** - Simple navigation test
+3. **Open App** - Tests app launching
+4. **Wait** - Verifies timing control
+5. **Search Google** - Tests text input
+
+Once these work, you can build more complex workflows!
+
+---
+
+**Remember:** MacroDroid is your MVP solution. It proves your concept works. Once validated, you can invest in a native Accessibility Service implementation for production use.

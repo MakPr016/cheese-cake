@@ -34,6 +34,13 @@ export default function HomeScreen() {
       route: '/automation',
     },
     {
+      title: 'MacroDroid Setup',
+      description: 'Configure MacroDroid for real Android automation',
+      icon: 'hardware-chip' as const,
+      color: '#8B5CF6',
+      route: '/macrodroid-setup',
+    },
+    {
       title: 'API Setup',
       description: 'Configure your OpenRouter API key',
       icon: 'key' as const,

@@ -1,0 +1,381 @@
+// Example: How to use the MacroDroid automation system
+
+import React, { useState } from 'react';
+import { View, Text, TextInput, Button, ScrollView, StyleSheet } from 'react-native';
+import { AutomationService } from './services/AutomationService';
+import { PolarisService } from './services/PolarisService';
+import { AutomationStep } from './types';
+
+export default function AutomationApp() {
+  const [task, setTask] = useState('');
+  const [steps, setSteps] = useState<AutomationStep[]>([]);
+  const [isExecuting, setIsExecuting] = useState(false);
+  const [logs, setLogs] = useState<string[]>([]);
+
+  // Initialize services
+  const polarisService = new PolarisService('YOUR_OPENROUTER_API_KEY');
+  const automationService = new AutomationService();
+
+  // Add log message
+  const addLog = (message: string) => {
+    setLogs(prev => [...prev, `[${new Date().toLocaleTimeString()}] ${message}`]);
+  };
+
+  // Plan automation task using AI
+  const planTask = async () => {
+    try {
+      addLog(`Planning task: ${task}`);
+      
+      const plannedSteps = await polarisService.planTask(task);
+      setSteps(plannedSteps);
+      
+      addLog(`Generated ${plannedSteps.length} steps`);
+      
+      // Log each step
+      plannedSteps.forEach((step, idx) => {
+        addLog(`Step ${idx + 1}: ${step.action} → ${step.target}`);
+      });
+    } catch (error) {
+      addLog(`Error planning task: ${error.message}`);
+    }
+  };
+
+  // Execute automation plan
+  const executeAutomation = async () => {
+    if (steps.length === 0) {
+      addLog('No steps to execute. Plan a task first.');
+      return;
+    }
+
+    setIsExecuting(true);
+    addLog('Starting automation execution...');
+
+    try {
+      await automationService.executePlan(
+        steps,
+        (stepIndex, status) => {
+          const step = steps[stepIndex];
+          
+          // Update step status
+          setSteps(prev => 
+            prev.map((s, i) => 
+              i === stepIndex ? { ...s, status } : s
+            )
+          );
+
+          // Log status change
+          if (status === 'running') {
+            addLog(`▶️ Executing: ${step.action} → ${step.target}`);
+          } else if (status === 'completed') {
+            addLog(`✅ Completed: ${step.action}`);
+          } else if (status === 'failed') {
+            addLog(`❌ Failed: ${step.action}`);
+          }
+        }
+      );
+
+      addLog('🎉 Automation completed successfully!');
+    } catch (error) {
+      addLog(`❌ Automation failed: ${error.message}`);
+    } finally {
+      setIsExecuting(false);
+    }
+  };
+
+  // Test individual webhook
+  const testWebhook = async (action: string) => {
+    addLog(`Testing webhook: ${action}`);
+    
+    try {
+      const isWorking = await automationService.testWebhook(action);
+      
+      if (isWorking) {
+        addLog(`✅ Webhook ${action} is working!`);
+      } else {
+        addLog(`❌ Webhook ${action} failed. Check MacroDroid setup.`);
+      }
+    } catch (error) {
+      addLog(`❌ Test error: ${error.message}`);
+    }
+  };
+
+  return (
+    <ScrollView style={styles.container}>
+      <Text style={styles.title}>Android Automation</Text>
+
+      {/* Task Input */}
+      <View style={styles.section}>
+        <Text style={styles.label}>Enter Task:</Text>
+        <TextInput
+          style={styles.input}
+          value={task}
+          onChangeText={setTask}
+          placeholder="E.g., Search for pizza places"
+          placeholderTextColor="#666"
+        />
+        <Button title="Plan Task" onPress={planTask} disabled={!task || isExecuting} />
+      </View>
+
+      {/* Automation Steps */}
+      {steps.length > 0 && (
+        <View style={styles.section}>
+          <Text style={styles.label}>Automation Steps:</Text>
+          {steps.map((step, index) => (
+            <View key={index} style={styles.step}>
+              <View style={styles.stepHeader}>
+                <Text style={styles.stepNumber}>Step {index + 1}</Text>
+                <Text style={[
+                  styles.stepStatus,
+                  step.status === 'completed' && styles.stepCompleted,
+                  step.status === 'running' && styles.stepRunning,
+                  step.status === 'failed' && styles.stepFailed,
+                ]}>
+                  {step.status}
+                </Text>
+              </View>
+              <Text style={styles.stepAction}>
+                {step.action} → {step.target}
+              </Text>
+              {step.text && (
+                <Text style={styles.stepText}>Text: "{step.text}"</Text>
+              )}
+              <Text style={styles.stepReasoning}>{step.reasoning}</Text>
+            </View>
+          ))}
+          <Button 
+            title={isExecuting ? "Executing..." : "Execute Automation"} 
+            onPress={executeAutomation} 
+            disabled={isExecuting}
+          />
+        </View>
+      )}
+
+      {/* Quick Actions */}
+      <View style={styles.section}>
+        <Text style={styles.label}>Quick Actions:</Text>
+        <View style={styles.buttonRow}>
+          <Button title="Open Browser" onPress={() => {
+            setSteps([{
+              action: 'open_browser',
+              target: 'Browser',
+              reasoning: 'Quick action',
+              status: 'pending'
+            }]);
+          }} />
+          <Button title="Test Search" onPress={() => testWebhook('search_google')} />
+        </View>
+      </View>
+
+      {/* Example Tasks */}
+      <View style={styles.section}>
+        <Text style={styles.label}>Example Tasks:</Text>
+        {[
+          'Search for restaurants near me',
+          'Open YouTube and search for music',
+          'Send message to John saying hello',
+          'Call Mom',
+        ].map((example, idx) => (
+          <Button 
+            key={idx}
+            title={example}
+            onPress={() => setTask(example)}
+          />
+        ))}
+      </View>
+
+      {/* Logs */}
+      <View style={styles.section}>
+        <Text style={styles.label}>Execution Logs:</Text>
+        <ScrollView style={styles.logsContainer}>
+          {logs.map((log, index) => (
+            <Text key={index} style={styles.logText}>{log}</Text>
+          ))}
+        </ScrollView>
+        <Button title="Clear Logs" onPress={() => setLogs([])} />
+      </View>
+
+      {/* Configuration */}
+      <View style={styles.section}>
+        <Text style={styles.label}>Configuration:</Text>
+        <Text style={styles.infoText}>
+          Webhook Config: {Object.keys(automationService.getWebhookConfig()).length} actions configured
+        </Text>
+        <Text style={styles.infoText}>
+          Estimated time: {automationService.estimateExecutionTime(steps).toFixed(1)}s
+        </Text>
+      </View>
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#1a1a1a',
+    padding: 16,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 24,
+    textAlign: 'center',
+  },
+  section: {
+    backgroundColor: '#2a2a2a',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+  },
+  label: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#fff',
+    marginBottom: 12,
+  },
+  input: {
+    backgroundColor: '#3a3a3a',
+    color: '#fff',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 12,
+    fontSize: 16,
+  },
+  step: {
+    backgroundColor: '#3a3a3a',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 8,
+  },
+  stepHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  stepNumber: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#8b5cf6',
+  },
+  stepStatus: {
+    fontSize: 14,
+    color: '#666',
+    textTransform: 'uppercase',
+  },
+  stepCompleted: {
+    color: '#22c55e',
+  },
+  stepRunning: {
+    color: '#3b82f6',
+  },
+  stepFailed: {
+    color: '#ef4444',
+  },
+  stepAction: {
+    fontSize: 16,
+    color: '#fff',
+    fontWeight: '500',
+    marginBottom: 4,
+  },
+  stepText: {
+    fontSize: 14,
+    color: '#a78bfa',
+    marginBottom: 4,
+  },
+  stepReasoning: {
+    fontSize: 13,
+    color: '#888',
+    fontStyle: 'italic',
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 8,
+  },
+  logsContainer: {
+    backgroundColor: '#1a1a1a',
+    borderRadius: 8,
+    padding: 12,
+    maxHeight: 200,
+    marginBottom: 12,
+  },
+  logText: {
+    color: '#aaa',
+    fontSize: 12,
+    fontFamily: 'monospace',
+    marginBottom: 4,
+  },
+  infoText: {
+    color: '#aaa',
+    fontSize: 14,
+    marginBottom: 8,
+  },
+});
+
+
+// ============================================
+// CONFIGURATION GUIDE
+// ============================================
+
+/*
+
+STEP 1: Install MacroDroid
+---------------------------
+1. Download from Play Store: https://play.google.com/store/apps/details?id=com.arlosoft.macrodroid
+2. Open app and grant all requested permissions
+3. Enable Accessibility Service in Settings
+
+
+STEP 2: Create Webhooks in MacroDroid
+--------------------------------------
+For each action, create a macro:
+
+Example: "Open Browser" Macro
+1. Tap "+" to create new macro
+2. Add Trigger → Connectivity → Webhook (Cloud)
+3. Name it: "Open Browser"
+4. Add Action → Applications → Launch Application
+5. Select "Chrome" or "Browser"
+6. Save macro
+7. Copy webhook URL (looks like: https://trigger.macrodroid.com/abc123xyz)
+
+
+STEP 3: Update Webhook IDs in Code
+-----------------------------------
+In AutomationService.ts, replace placeholder IDs:
+
+webhooks: {
+  'open_browser': {
+    id: 'abc123xyz', // ← Replace with your actual webhook ID from MacroDroid
+    name: 'Open Browser',
+    description: 'Opens default browser'
+  },
+  // ... update all webhook IDs
+}
+
+
+STEP 4: Test
+------------
+1. Run your app
+2. Try "Quick Actions" first to test individual webhooks
+3. Then try full automation tasks
+4. Check logs for any errors
+
+
+COMMON ISSUES:
+--------------
+- Webhook not triggering: Check internet and MacroDroid Cloud login
+- Action fails: Verify accessibility permissions enabled
+- App won't open: Check app is installed
+- Text not typing: Add wait step before typing
+
+
+EXAMPLE TASKS TO TRY:
+---------------------
+✓ "Search for pizza places"
+✓ "Open YouTube and search for music"
+✓ "Send message to John"
+✓ "Call Mom"
+✓ "Open settings"
+
+*/
