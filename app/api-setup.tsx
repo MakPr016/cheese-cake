@@ -30,6 +30,8 @@ export default function ApiSetupScreen() {
   };
 
   const handleSave = async () => {
+    console.log('Save button clicked, API key length:', apiKey.trim().length);
+    
     if (!apiKey.trim()) {
       Alert.alert('Error', 'Please enter an API key');
       return;
@@ -37,15 +39,19 @@ export default function ApiSetupScreen() {
 
     setLoading(true);
     try {
+      console.log('Attempting to save API key...');
       await saveApiKey(apiKey.trim());
-      Alert.alert('Success', 'API key saved successfully!', [
+      console.log('API key save completed');
+      
+      Alert.alert('Success', 'API key saved successfully! You can now use the Chat and Automation features.', [
         {
           text: 'OK',
           onPress: () => router.back(),
         },
       ]);
     } catch (error) {
-      Alert.alert('Error', 'Failed to save API key');
+      console.error('Failed to save API key:', error);
+      Alert.alert('Error', `Failed to save API key: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setLoading(false);
     }

@@ -31,19 +31,35 @@ export default function ChatScreen() {
   }, []);
 
   const initializeChat = async () => {
+    console.log('Initializing chat...');
     const apiKey = await getApiKey();
+    console.log('API key retrieved:', apiKey ? 'yes' : 'no');
+    
     if (!apiKey) {
-      Alert.alert('API Key Required', 'Please configure your API key in Settings first.');
+      console.log('No API key found, showing alert');
+      Alert.alert('API Key Required', 'Please configure your API key in API Setup first.');
       return;
     }
 
     setPolarisService(new PolarisService(apiKey));
     const history = await getChatHistory();
     setMessages(history);
+    console.log('Chat initialized with', history.length, 'messages');
   };
 
   const sendMessage = async () => {
-    if (!inputText.trim() || !polarisService) return;
+    console.log('Send message clicked, input:', inputText.trim().length, 'chars');
+    
+    if (!inputText.trim()) {
+      console.log('Empty message, returning');
+      return;
+    }
+    
+    if (!polarisService) {
+      console.log('No Polaris service, showing alert');
+      Alert.alert('API Key Required', 'Please configure your API key in API Setup first.');
+      return;
+    }
 
     const userMessage: Message = {
       role: 'user',

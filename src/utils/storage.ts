@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
 import { Message, ApiKeyConfig } from '../types';
 
 const KEYS = {
@@ -8,13 +9,46 @@ const KEYS = {
 
 const MAX_MESSAGES = 20;
 
+let memoryStorage: { [key: string]: string } = {};
+
+const getStorage = () => {
+  if (Platform.OS === 'web') {
+    return {
+      setItem: async (key: string, value: string) => {
+        try {
+          window.localStorage.setItem(key, value);
+        } catch {
+          memoryStorage[key] = value;
+        }
+      },
+      getItem: async (key: string) => {
+        try {
+          return window.localStorage.getItem(key);
+        } catch {
+          return memoryStorage[key] || null;
+        }
+      },
+      removeItem: async (key: string) => {
+        try {
+          window.localStorage.removeItem(key);
+        } catch {
+          delete memoryStorage[key];
+        }
+      },
+    };
+  }
+  return AsyncStorage;
+};
+
 export const saveApiKey = async (apiKey: string): Promise<void> => {
   try {
     const config: ApiKeyConfig = {
       apiKey,
       timestamp: Date.now(),
     };
-    await AsyncStorage.setItem(KEYS.API_KEY, JSON.stringify(config));
+    const storage = getStorage();
+    await storage.setItem(KEYS.API_KEY, JSON.stringify(config));
+    console.log('API key saved successfully');
   } catch (error) {
     console.error('Error saving API key:', error);
     throw error;
@@ -23,7 +57,10 @@ export const saveApiKey = async (apiKey: string): Promise<void> => {
 
 export const getApiKey = async (): Promise<string | null> => {
   try {
-    const configStr = await AsyncStorage.getItem(KEYS.API_KEY);
+    const storage = getStorage();
+    const configStr = await storage.getItem(KEYS.API_KEY);
+    console.log('Retrieved API key config:', configStr ? 'found' : 'not found');
+    
     if (!configStr) return null;
     
     const config: ApiKeyConfig = JSON.parse(configStr);
@@ -37,7 +74,9 @@ export const getApiKey = async (): Promise<string | null> => {
 export const saveChatHistory = async (messages: Message[]): Promise<void> => {
   try {
     const limitedMessages = messages.slice(-MAX_MESSAGES);
-    await AsyncStorage.setItem(KEYS.CHAT_HISTORY, JSON.stringify(limitedMessages));
+    const storage = getStorage();
+    await storage.setItem(KEYS.CHAT_HISTORY, JSON.stringify(limitedMessages));
+    console.log('Chat history saved:', limitedMessages.length, 'messages');
   } catch (error) {
     console.error('Error saving chat history:', error);
     throw error;
@@ -46,7 +85,9 @@ export const saveChatHistory = async (messages: Message[]): Promise<void> => {
 
 export const getChatHistory = async (): Promise<Message[]> => {
   try {
-    const historyStr = await AsyncStorage.getItem(KEYS.CHAT_HISTORY);
+    const storage = getStorage();
+    const historyStr = await storage.getItem(KEYS.CHAT_HISTORY);
+    
     if (!historyStr) return [];
     
     return JSON.parse(historyStr);
@@ -58,7 +99,9 @@ export const getChatHistory = async (): Promise<Message[]> => {
 
 export const clearChatHistory = async (): Promise<void> => {
   try {
-    await AsyncStorage.removeItem(KEYS.CHAT_HISTORY);
+    const storage = getStorage();
+    await storage.removeItem(KEYS.CHAT_HISTORY);
+    console.log('Chat history cleared');
   } catch (error) {
     console.error('Error clearing chat history:', error);
     throw error;

@@ -31,17 +31,33 @@ export default function AutomationScreen() {
   }, []);
 
   const initializeServices = async () => {
+    console.log('Initializing automation services...');
     const apiKey = await getApiKey();
+    console.log('API key retrieved:', apiKey ? 'yes' : 'no');
+    
     if (!apiKey) {
-      Alert.alert('API Key Required', 'Please configure your API key in Settings first.');
+      console.log('No API key found, showing alert');
+      Alert.alert('API Key Required', 'Please configure your API key in API Setup first.');
       return;
     }
 
     setPolarisService(new PolarisService(apiKey));
+    console.log('Automation services initialized');
   };
 
   const planTask = async () => {
-    if (!taskInput.trim() || !polarisService) return;
+    console.log('Plan task clicked, input:', taskInput.trim().length, 'chars');
+    
+    if (!taskInput.trim()) {
+      console.log('Empty task input, returning');
+      return;
+    }
+    
+    if (!polarisService) {
+      console.log('No Polaris service, showing alert');
+      Alert.alert('API Key Required', 'Please configure your API key in API Setup first. Go to the home screen and tap "API Setup".');
+      return;
+    }
 
     setLoading(true);
     try {
