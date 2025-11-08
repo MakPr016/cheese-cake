@@ -47,14 +47,19 @@ export class AutomationService {
     const phoneNumber = step.target.replace(/\D/g, '');
     const message = encodeURIComponent(step.text || '');
     
-    const url = `whatsapp://send?phone=${phoneNumber}&text=${message}`;
+    const appUrl = `whatsapp://send?phone=${phoneNumber}&text=${message}`;
+    const webUrl = `https://web.whatsapp.com/send?phone=${phoneNumber}&text=${message}`;
     
-    const canOpen = await Linking.canOpenURL(url);
-    if (!canOpen) {
-      throw new Error('WhatsApp is not installed on your device');
+    const canOpenApp = await Linking.canOpenURL(appUrl);
+    
+    if (canOpenApp) {
+      console.log('WhatsApp app detected, opening app...');
+      await Linking.openURL(appUrl);
+    } else {
+      console.log('WhatsApp app not found, opening WhatsApp Web...');
+      await Linking.openURL(webUrl);
     }
     
-    await Linking.openURL(url);
     await new Promise(resolve => setTimeout(resolve, 2000));
   }
 
