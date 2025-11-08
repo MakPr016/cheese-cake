@@ -4,8 +4,8 @@
   "version": "1.0.0",
   "scripts": {
     "start": "expo start",
-    "server": "node --loader ts-node/esm server/index.ts",
-    "dev:server": "nodemon --exec node --loader ts-node/esm server/index.ts",
+    "server": "tsx server/index.ts",
+    "dev:server": "tsx watch server/index.ts",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "reset-project": "node ./scripts/reset-project.js",
