@@ -6,7 +6,16 @@ This is a React Native mobile application built with Expo that provides an AI-po
 
 ## Recent Changes
 
-**November 8, 2025 (Latest)**: Cross-Platform Voice Input Implementation
+**November 8, 2025 (Latest)**: Real Automation Execution with Deep Linking
+- Upgraded automation from simulation to REAL execution using deep linking
+- WhatsApp: Opens WhatsApp app (if installed) or WhatsApp Web with pre-filled message
+- Email: Opens default email client with pre-filled recipient, subject, and body
+- Phone Calls: Opens phone dialer with number ready to call
+- Cross-platform support: Works on web, iOS, Android, and desktop
+- Smart detection: Automatically falls back to WhatsApp Web if app not installed
+- No API keys needed for basic automation actions
+
+**November 8, 2025**: Cross-Platform Voice Input Implementation
 - Upgraded VoiceInput to work on ALL platforms (web, iOS, Android) with Expo Go compatibility
 - Web: Uses Web Speech API for real-time voice recognition
 - Native (iOS/Android): Uses expo-av for audio recording + OpenAI Whisper API for transcription
@@ -89,11 +98,16 @@ Preferred communication style: Simple, everyday language.
 - Error handling with descriptive user-facing messages
 
 **Automation Service** (`AutomationService`):
-- Manages step-by-step task execution with status tracking
-- Simulates automation delays based on action type
+- Executes real automation tasks using deep linking and native app integration
+- **WhatsApp**: Opens WhatsApp app or falls back to WhatsApp Web (`whatsapp://` or `https://web.whatsapp.com/send`)
+- **Email**: Opens default email client with pre-filled message (`mailto:`)
+- **Phone Calls**: Opens phone dialer (`tel:`)
+- Smart platform detection using `Linking.canOpenURL()` for fallback support
+- Step-by-step execution with status tracking (pending → running → completed/failed)
+- Error handling with user-friendly alerts
 - Validates automation steps before execution
 - Provides execution time estimation
-- Supports actions: tap, type, swipe, scroll, wait, open_app
+- Legacy simulation support for non-executable actions (tap, type, swipe, scroll, wait, open_app)
 
 **Intent Detection** (`intents.ts`):
 - Keyword-based classification to route user input to chat vs automation mode
