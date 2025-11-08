@@ -1,0 +1,179 @@
+Build an Android AI Assistant app using the existing Expo template.
+
+⚠️ IMPORTANT CONSTRAINTS:
+- Work with EXISTING Expo template - modify existing files minimally
+- Limited credits ($10) - only create necessary files
+- NO emojis in UI - use @expo/vector-icons (Ionicons) only
+- Modern, sleek dark mode design
+
+══════════════════════════════════════════
+
+## APP OVERVIEW
+
+Two-mode AI assistant:
+1. Chat Mode: Q&A with conversation memory (last 20 messages)
+2. Automation Mode: Task execution planning
+
+══════════════════════════════════════════
+
+## TECH STACK
+
+- React Native Expo (Android)
+- TypeScript
+- OpenRouter API - Polaris Alpha model (FREE)
+  - Base URL: https://openrouter.ai/api/v1
+  - Model: openrouter/polaris-alpha
+  - Vision capable, 256K context
+- AsyncStorage for API key + chat history
+- @expo/vector-icons (Ionicons) for all icons
+- OpenAI SDK for API calls
+
+══════════════════════════════════════════
+
+## FILES TO CREATE
+
+src/
+├── services/
+│   ├── PolarisService.ts     # OpenRouter API client
+│   └── AutomationService.ts  # Task planning
+├── components/
+│   ├── FloatingBubble.tsx    # Draggable AI button
+│   ├── MessageBubble.tsx     # Chat bubbles
+│   └── ActionCard.tsx        # Automation step cards
+├── utils/
+│   ├── storage.ts            # AsyncStorage helpers
+│   ├── intents.ts            # Chat vs automation detection
+│   └── theme.ts              # Modern dark theme
+└── types/index.ts            # TypeScript types
+
+app/
+├── chat.tsx                  # Chat screen route
+├── automation.tsx            # Automation screen route
+└── api-setup.tsx             # API config screen
+
+══════════════════════════════════════════
+
+## DESIGN SYSTEM (theme.ts)
+
+Dark mode colors:
+- Background: #0A0A0A
+- Surface: #1A1A1A
+- Primary accent: #6366F1 (Indigo)
+- Success: #10B981 (Green)
+- Text: #FFFFFF
+- Border radius: 12-24px
+- Smooth shadows and gradients
+- Use Ionicons for ALL icons
+
+══════════════════════════════════════════
+
+## KEY FEATURES
+
+### 1. Home Screen
+- Modern card layout
+- 3 feature cards: Chat Mode, Automation, API Setup
+- Ionicons for each card
+- Show API key status
+
+### 2. Chat Mode
+- Chat interface with message bubbles
+- User messages (right, indigo)
+- AI responses (left, gray surface)
+- Input bar with send icon
+- Saves last 20 messages to AsyncStorage
+- Loads history on mount
+
+### 3. Automation Mode
+- Task input field
+- "Plan Task" button
+- Shows step-by-step breakdown
+- ActionCard components with icons:
+  - tap → hand-left-outline
+  - type → text-outline
+  - swipe → arrow-forward-outline
+  - wait → time-outline
+  - open_app → apps-outline
+- Color-coded status indicators
+
+### 4. API Setup Screen
+- API key input (secure text)
+- Save button
+- Link to openrouter.ai/keys
+- Info box: "Polaris Alpha is FREE"
+
+### 5. FloatingBubble Component
+- Draggable 64x64 circle
+- Ionicons chatbubbles icon
+- Bottom right position
+- Opens chat on press
+
+══════════════════════════════════════════
+
+## SERVICE IMPLEMENTATIONS
+
+### PolarisService
+- Constructor takes apiKey
+- chat(message, history) → returns string
+- analyzeImage(base64, question) → returns string
+- planTask(task) → returns AutomationStep[]
+
+### AutomationService
+- executePlan(steps) → simulates execution
+
+### Storage utilities
+- saveApiKey / getApiKey
+- saveChatHistory / getChatHistory (limit 20)
+- clearChatHistory
+
+### Intent detection
+- detectIntent(message) → 'chat' | 'automation'
+- Check for keywords: open, send, text, call, etc.
+
+══════════════════════════════════════════
+
+## TYPES
+
+```
+
+interface Message {
+role: 'user' | 'assistant';
+content: string;
+}
+
+interface AutomationStep {
+action: 'tap' | 'type' | 'swipe' | 'scroll' | 'wait' | 'open_app';
+target: string;
+text?: string;
+reasoning: string;
+}
+
+```
+
+══════════════════════════════════════════
+
+## DEPENDENCIES TO ADD
+
+npm install @react-native-async-storage/async-storage openai
+
+══════════════════════════════════════════
+
+## NAVIGATION
+
+Use Expo Router:
+- app/(tabs)/index.tsx → Home
+- app/chat.tsx → Chat screen
+- app/automation.tsx → Automation screen
+- app/api-setup.tsx → API config
+
+══════════════════════════════════════════
+
+## MVP SCOPE (Skip for now)
+
+- Volume button trigger (manual app launch for MVP)
+- Vector database (use simple array)
+- Actual automation execution (show planning only)
+- Background service
+
+══════════════════════════════════════════
+
+START BUILDING: Create modern, sleek UI with Ionicons and implement the core chat + automation features using Polaris Alpha API.
