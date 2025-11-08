@@ -6,7 +6,18 @@ This is a React Native mobile application built with Expo that provides an AI-po
 
 ## Recent Changes
 
-**November 8, 2025 (Latest)**: PostgreSQL Database Integration
+**November 8, 2025 (Latest)**: MacroDroid Integration for Real Android Automation
+- Integrated MacroDroid webhook-based automation for real device control
+- Updated AutomationService to trigger MacroDroid webhooks instead of simulations
+- Enhanced PolarisService AI planning with 13 MacroDroid-compatible actions
+- Created comprehensive MacroDroid Setup screen with 3-tab interface (setup, macros, testing)
+- Added new automation actions: open_browser, search_google, open_url, make_call, send_sms, go_back, go_home
+- Implemented complete payload building with query text, messages, contacts, URLs
+- Added home screen navigation card for MacroDroid setup
+- Clear documentation about webhook URL configuration requirements
+- Integration architect-approved and ready for MVP testing
+
+**November 8, 2025**: PostgreSQL Database Integration
 - Integrated Replit's Neon PostgreSQL database for cloud-based chat message persistence
 - Created database schema with Drizzle ORM for messages table (user_id, role, content, timestamp)
 - Built Express backend API on port 3000 with GET, POST, DELETE endpoints
@@ -70,6 +81,7 @@ Preferred communication style: Simple, everyday language.
 - `/` - Home screen with navigation cards
 - `/chat` - Chat mode interface
 - `/automation` - Automation planning and execution
+- `/macrodroid-setup` - MacroDroid setup and configuration guide
 - `/api-setup` - API key configuration
 - `/(tabs)` - Tab navigation container
 
@@ -83,11 +95,15 @@ Preferred communication style: Simple, everyday language.
 - Error handling with descriptive user-facing messages
 
 **Automation Service** (`AutomationService`):
+- MacroDroid webhook-based execution for real Android device control
+- Triggers MacroDroid macros via HTTP POST requests to webhook URLs
 - Manages step-by-step task execution with status tracking
-- Simulates automation delays based on action type
 - Validates automation steps before execution
 - Provides execution time estimation
-- Supports actions: tap, type, swipe, scroll, wait, open_app
+- Supports 13 MacroDroid actions: open_browser, search_google, open_url, make_call, send_sms, open_app, tap, type, swipe, scroll, go_back, go_home, wait
+- Builds complete payloads with query text, messages, contacts, URLs, and coordinates
+- Configurable webhook IDs and base URL for production use
+- 10-second timeout per webhook request with error handling
 
 **Intent Detection** (`intents.ts`):
 - Keyword-based classification to route user input to chat vs automation mode
