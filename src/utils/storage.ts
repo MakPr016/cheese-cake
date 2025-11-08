@@ -1,13 +1,16 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 import { Message, ApiKeyConfig } from '../types';
+import Constants from 'expo-constants';
 
 const KEYS = {
   API_KEY: '@ai_assistant_api_key',
-  CHAT_HISTORY: '@ai_assistant_chat_history',
+  USER_ID: '@ai_assistant_user_id',
 };
 
-const MAX_MESSAGES = 20;
+const API_URL = Platform.OS === 'web' 
+  ? `https://${Constants.expoConfig?.hostUri?.split(':')[0]}:3000` 
+  : 'http://localhost:3000';
 
 let memoryStorage: { [key: string]: string } = {};
 
@@ -38,6 +41,23 @@ const getStorage = () => {
     };
   }
   return AsyncStorage;
+};
+
+const getUserId = async (): Promise<string> => {
+  try {
+    const storage = getStorage();
+    let userId = await storage.getItem(KEYS.USER_ID);
+    
+    if (!userId) {
+      userId = `user_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+      await storage.setItem(KEYS.USER_ID, userId);
+    }
+    
+    return userId;
+  } catch (error) {
+    console.error('Error getting user ID:', error);
+    return `user_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+  }
 };
 
 export const saveApiKey = async (apiKey: string): Promise<void> => {
@@ -73,37 +93,60 @@ export const getApiKey = async (): Promise<string | null> => {
 
 export const saveChatHistory = async (messages: Message[]): Promise<void> => {
   try {
-    const limitedMessages = messages.slice(-MAX_MESSAGES);
-    const storage = getStorage();
-    await storage.setItem(KEYS.CHAT_HISTORY, JSON.stringify(limitedMessages));
-    console.log('Chat history saved:', limitedMessages.length, 'messages');
+    const userId = await getUserId();
+    
+    for (const message of messages) {
+      await fetch(`${API_URL}/api/messages`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId,
+          role: message.role,
+          content: message.content,
+        }),
+      });
+    }
+    
+    console.log('Chat history saved to cloud:', messages.length, 'messages');
   } catch (error) {
-    console.error('Error saving chat history:', error);
+    console.error('Error saving chat history to cloud:', error);
     throw error;
   }
 };
 
 export const getChatHistory = async (): Promise<Message[]> => {
   try {
-    const storage = getStorage();
-    const historyStr = await storage.getItem(KEYS.CHAT_HISTORY);
+    const userId = await getUserId();
+    const response = await fetch(`${API_URL}/api/messages/${userId}`);
     
-    if (!historyStr) return [];
+    if (!response.ok) {
+      throw new Error('Failed to fetch chat history');
+    }
     
-    return JSON.parse(historyStr);
+    const data = await response.json();
+    
+    return data.map((msg: any) => ({
+      role: msg.role as 'user' | 'assistant',
+      content: msg.content,
+      timestamp: new Date(msg.createdAt).getTime(),
+    }));
   } catch (error) {
-    console.error('Error getting chat history:', error);
+    console.error('Error getting chat history from cloud:', error);
     return [];
   }
 };
 
 export const clearChatHistory = async (): Promise<void> => {
   try {
-    const storage = getStorage();
-    await storage.removeItem(KEYS.CHAT_HISTORY);
-    console.log('Chat history cleared');
+    const userId = await getUserId();
+    await fetch(`${API_URL}/api/messages/${userId}`, {
+      method: 'DELETE',
+    });
+    console.log('Chat history cleared from cloud');
   } catch (error) {
-    console.error('Error clearing chat history:', error);
+    console.error('Error clearing chat history from cloud:', error);
     throw error;
   }
 };

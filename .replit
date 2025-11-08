@@ -5,6 +5,10 @@ modules = ["nodejs-20", "nix"]
 channel = "stable-25_05"
 
 [[ports]]
+localPort = 3000
+externalPort = 3000
+
+[[ports]]
 localPort = 8000
 externalPort = 8000
 
@@ -19,6 +23,10 @@ externalPort = 3000
 [[ports]]
 localPort = 33451
 externalPort = 3001
+
+[[ports]]
+localPort = 34255
+externalPort = 3002
 
 [workflows]
 runButton = "Project"
@@ -72,6 +80,10 @@ author = "agent"
 task = "workflow.run"
 args = "expo-app"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "api-server"
+
 [[workflows.workflow]]
 name = "expo-app"
 author = "agent"
@@ -83,6 +95,18 @@ outputType = "console"
 task = "shell.exec"
 args = "npx expo start --port 8000"
 waitForPort = 8000
+
+[[workflows.workflow]]
+name = "api-server"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run server"
+waitForPort = 3000
+
+[workflows.workflow.metadata]
+outputType = "console"
 
 [agent]
 expertMode = true
