@@ -3,9 +3,11 @@ import { Message, AutomationStep } from '../types';
 
 export class PolarisService {
   private client: OpenAI;
+  private apiKey: string;
   private model = 'openrouter/polaris-alpha';
 
   constructor(apiKey: string) {
+    this.apiKey = apiKey;
     this.client = new OpenAI({
       apiKey: apiKey,
       baseURL: 'https://openrouter.ai/api/v1',
@@ -64,6 +66,39 @@ export class PolarisService {
     } catch (error) {
       console.error('Image analysis error:', error);
       throw new Error(`Failed to analyze image: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
+  async transcribeAudio(audioUri: string): Promise<string> {
+    try {
+      const formData = new FormData();
+      
+      formData.append('file', {
+        uri: audioUri,
+        type: 'audio/m4a',
+        name: 'audio.m4a',
+      } as any);
+      formData.append('model', 'openai/whisper-1');
+
+      const transcriptionResponse = await fetch('https://openrouter.ai/api/v1/audio/transcriptions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.apiKey}`,
+        },
+        body: formData,
+      });
+
+      if (!transcriptionResponse.ok) {
+        const errorText = await transcriptionResponse.text();
+        console.error('Transcription API error:', errorText);
+        throw new Error(`Transcription failed: ${transcriptionResponse.statusText}`);
+      }
+
+      const result = await transcriptionResponse.json();
+      return result.text || '';
+    } catch (error) {
+      console.error('Audio transcription error:', error);
+      throw new Error(`Failed to transcribe audio: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 

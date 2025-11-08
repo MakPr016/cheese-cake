@@ -207,6 +207,7 @@ export default function AutomationScreen() {
         visible={showVoiceInput}
         onClose={() => setShowVoiceInput(false)}
         onConfirm={handleVoiceConfirm}
+        polarisService={polarisService}
       />
     </View>
   );

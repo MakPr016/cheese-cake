@@ -260,6 +260,7 @@ export default function ChatScreen() {
         visible={showVoiceInput}
         onClose={() => setShowVoiceInput(false)}
         onConfirm={handleVoiceConfirm}
+        polarisService={polarisService}
       />
     </KeyboardAvoidingView>
   );
