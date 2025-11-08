@@ -6,12 +6,20 @@ This is a React Native mobile application built with Expo that provides an AI-po
 
 ## Recent Changes
 
+**November 8, 2025 (Latest)**: Voice Input Feature Implementation
+- Added VoiceInput component with Web Speech API integration
+- Voice input works in browsers with recording modal and visual feedback
+- Transcription confirmation dialog before populating text fields
+- Integrated voice input into both Chat and Automation screens
+- Platform detection with graceful unsupported message for native platforms
+- Feature verified and architect-approved
+
 **November 8, 2025**: Complete implementation of AI Assistant app
 - Created all core services (PolarisService, AutomationService)
-- Built all UI components (MessageBubble, ActionCard, FloatingBubble)
+- Built all UI components (MessageBubble, ActionCard, FloatingBubble, VoiceInput)
 - Implemented all app screens (Home, Chat, Automation, API Setup)
 - Added theme system with modern dark mode design
-- Configured AsyncStorage for API key and chat history persistence
+- Configured AsyncStorage for API key and chat history persistence with web fallback
 - Set up Expo workflow running on port 8000
 - App is fully functional and ready to use with OpenRouter API key
 
@@ -30,10 +38,18 @@ Preferred communication style: Simple, everyday language.
 
 **UI Components**:
 - Custom themed components (`ThemedText`, `ThemedView`) for consistent styling
-- Reusable UI components: `MessageBubble` for chat interface, `ActionCard` for automation steps, `FloatingBubble` for draggable AI button
+- Reusable UI components: `MessageBubble` for chat interface, `ActionCard` for automation steps, `FloatingBubble` for draggable AI button, `VoiceInput` for voice-to-text input
 - Uses `@expo/vector-icons` (Ionicons) exclusively for all iconography
 - Implements `react-native-reanimated` for smooth animations and gestures
 - Dark mode as primary design language with modern, sleek aesthetic
+
+**Voice Input** (`VoiceInput.tsx`):
+- Web Speech API integration for browser-based voice recognition
+- Modal interface with recording state visualization (animated microphone icon)
+- Real-time transcription with confirmation dialog
+- Platform detection - works on web browsers, shows message for native
+- Error handling for unsupported browsers or permission denials
+- User can retry recording or confirm transcription before populating input fields
 
 **State Management**:
 - Component-level state using React hooks (useState, useEffect)
