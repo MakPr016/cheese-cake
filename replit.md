@@ -6,7 +6,15 @@ This is a React Native mobile application built with Expo that provides an AI-po
 
 ## Recent Changes
 
-**November 8, 2025 (Latest)**: Supabase Vector Database Integration Completed
+**November 8, 2025 (Latest)**: Cross-Platform Voice Input Implementation
+- Upgraded VoiceInput to work on ALL platforms (web, iOS, Android) with Expo Go compatibility
+- Web: Uses Web Speech API for real-time voice recognition
+- Native (iOS/Android): Uses expo-av for audio recording + OpenAI Whisper API for transcription
+- Added Whisper transcription to PolarisService with OpenRouter integration
+- Requires OpenRouter API key for native voice input (web works without it)
+- Available in both Chat and Automation screens on all platforms
+
+**November 8, 2025**: Supabase Vector Database Integration Completed
 - Implemented vector storage for unlimited chat history with semantic search
 - Created SupabaseClient.ts and VectorStorageService.ts services
 - Automatic embedding generation using OpenRouter's text-embedding-3-small (384 dimensions)
@@ -14,12 +22,6 @@ This is a React Native mobile application built with Expo that provides an AI-po
 - Dual-write strategy prevents data loss during Supabase outages
 - User alerts when system degrades to local storage mode
 - Database schema: chat_messages table with pgvector support and HNSW indexing
-
-**November 8, 2025**: Voice Input Feature Implementation (Web)
-- Added VoiceInput component with Web Speech API integration
-- Voice input works in browsers with recording modal and visual feedback
-- Transcription confirmation dialog before populating text fields
-- Integrated voice input into both Chat and Automation screens
 
 **November 8, 2025**: Complete implementation of AI Assistant app
 - Created all core services (PolarisService, AutomationService)
@@ -51,14 +53,17 @@ Preferred communication style: Simple, everyday language.
 - Dark mode as primary design language with modern, sleek aesthetic
 
 **Voice Input** (`VoiceInput.tsx`):
-- Web Speech API integration for browser-based voice recognition
+- **Cross-platform support**: Works on web, iOS, and Android with Expo Go
+- **Web implementation**: Web Speech API for real-time browser-based voice recognition
+- **Native implementation**: expo-av audio recording + OpenAI Whisper API transcription
 - Modal interface with recording state visualization (animated microphone icon)
-- Real-time transcription with confirmation dialog
-- Platform detection - works on web browsers, shows informative message on native
-- Error handling for unsupported browsers or permission denials
-- User can retry recording or confirm transcription before populating input fields
+- Transcription confirmation dialog before populating input fields
+- Platform-specific behavior: real-time on web, record-then-transcribe on native
+- Automatic microphone permission requests
+- Loading states during transcription on native platforms
+- Error handling for permissions, unsupported browsers, and API failures
 - Available in both Chat and Automation screens
-- Note: Native mobile voice input requires a development build (not compatible with Expo Go)
+- Fully compatible with Expo Go (no custom native modules required)
 
 **State Management**:
 - Component-level state using React hooks (useState, useEffect)
@@ -77,8 +82,10 @@ Preferred communication style: Simple, everyday language.
 **AI Service Layer** (`PolarisService`):
 - OpenAI SDK client configured for OpenRouter API
 - Base URL: `https://openrouter.ai/api/v1`
-- Model: `openrouter/polaris-alpha` (free tier, 256K context, vision-capable)
-- Handles both text-based chat and image analysis capabilities
+- Chat model: `openrouter/polaris-alpha` (free tier, 256K context, vision-capable)
+- Transcription model: `openai/whisper-1` for voice-to-text on native platforms
+- Handles text-based chat, image analysis, and audio transcription
+- Audio transcription via OpenRouter's Whisper API endpoint
 - Error handling with descriptive user-facing messages
 
 **Automation Service** (`AutomationService`):
