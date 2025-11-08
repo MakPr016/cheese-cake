@@ -16,6 +16,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { theme } from '@/src/utils/theme';
 import { Message } from '@/src/types';
 import { MessageBubble } from '@/src/components/MessageBubble';
+import { VoiceInput } from '@/src/components/VoiceInput';
 import { PolarisService } from '@/src/services/PolarisService';
 import { getApiKey, getChatHistory, saveChatHistory } from '@/src/utils/storage';
 
@@ -23,6 +24,7 @@ export default function ChatScreen() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showVoiceInput, setShowVoiceInput] = useState(false);
   const [polarisService, setPolarisService] = useState<PolarisService | null>(null);
   const flatListRef = useRef<FlatList>(null);
 
@@ -109,6 +111,11 @@ export default function ChatScreen() {
     );
   };
 
+  const handleVoiceConfirm = (text: string) => {
+    console.log('Voice input confirmed:', text);
+    setInputText(text);
+  };
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -161,6 +168,12 @@ export default function ChatScreen() {
           maxLength={500}
         />
         <Pressable
+          style={styles.micButton}
+          onPress={() => setShowVoiceInput(true)}
+        >
+          <Ionicons name="mic" size={24} color={theme.colors.primary} />
+        </Pressable>
+        <Pressable
           style={[styles.sendButton, !inputText.trim() && styles.sendButtonDisabled]}
           onPress={sendMessage}
           disabled={!inputText.trim() || loading}
@@ -172,6 +185,12 @@ export default function ChatScreen() {
           />
         </Pressable>
       </View>
+
+      <VoiceInput
+        visible={showVoiceInput}
+        onClose={() => setShowVoiceInput(false)}
+        onConfirm={handleVoiceConfirm}
+      />
     </KeyboardAvoidingView>
   );
 }
@@ -228,6 +247,14 @@ const styles = StyleSheet.create({
     fontSize: theme.fontSizes.md,
     color: theme.colors.text,
     maxHeight: 100,
+  },
+  micButton: {
+    width: 48,
+    height: 48,
+    borderRadius: theme.borderRadius.full,
+    backgroundColor: theme.colors.surfaceLight,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   sendButton: {
     width: 48,

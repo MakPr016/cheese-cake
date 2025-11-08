@@ -14,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { theme } from '@/src/utils/theme';
 import { AutomationStep } from '@/src/types';
 import { ActionCard } from '@/src/components/ActionCard';
+import { VoiceInput } from '@/src/components/VoiceInput';
 import { PolarisService } from '@/src/services/PolarisService';
 import { AutomationService } from '@/src/services/AutomationService';
 import { getApiKey } from '@/src/utils/storage';
@@ -23,6 +24,7 @@ export default function AutomationScreen() {
   const [steps, setSteps] = useState<AutomationStep[]>([]);
   const [loading, setLoading] = useState(false);
   const [executing, setExecuting] = useState(false);
+  const [showVoiceInput, setShowVoiceInput] = useState(false);
   const [polarisService, setPolarisService] = useState<PolarisService | null>(null);
   const automationService = new AutomationService();
 
@@ -97,6 +99,11 @@ export default function AutomationScreen() {
     setTaskInput('');
   };
 
+  const handleVoiceConfirm = (text: string) => {
+    console.log('Voice input confirmed for automation:', text);
+    setTaskInput(text);
+  };
+
   const estimatedTime = steps.length > 0 
     ? automationService.estimateExecutionTime(steps).toFixed(1) 
     : '0';
@@ -123,20 +130,29 @@ export default function AutomationScreen() {
           maxLength={200}
         />
 
-        <Pressable
-          style={[styles.button, styles.primaryButton, (!taskInput.trim() || loading) && styles.buttonDisabled]}
-          onPress={planTask}
-          disabled={!taskInput.trim() || loading}
-        >
-          {loading ? (
-            <ActivityIndicator size="small" color={theme.colors.text} />
-          ) : (
-            <>
-              <Ionicons name="hammer" size={20} color={theme.colors.text} />
-              <Text style={styles.buttonText}>Plan Task</Text>
-            </>
-          )}
-        </Pressable>
+        <View style={styles.buttonRow}>
+          <Pressable
+            style={styles.micButton}
+            onPress={() => setShowVoiceInput(true)}
+          >
+            <Ionicons name="mic" size={24} color={theme.colors.primary} />
+          </Pressable>
+
+          <Pressable
+            style={[styles.button, styles.primaryButton, (!taskInput.trim() || loading) && styles.buttonDisabled]}
+            onPress={planTask}
+            disabled={!taskInput.trim() || loading}
+          >
+            {loading ? (
+              <ActivityIndicator size="small" color={theme.colors.text} />
+            ) : (
+              <>
+                <Ionicons name="hammer" size={20} color={theme.colors.text} />
+                <Text style={styles.buttonText}>Plan Task</Text>
+              </>
+            )}
+          </Pressable>
+        </View>
       </View>
 
       {steps.length > 0 && (
@@ -186,6 +202,12 @@ export default function AutomationScreen() {
           </View>
         )}
       </ScrollView>
+
+      <VoiceInput
+        visible={showVoiceInput}
+        onClose={() => setShowVoiceInput(false)}
+        onConfirm={handleVoiceConfirm}
+      />
     </View>
   );
 }
@@ -216,7 +238,20 @@ const styles = StyleSheet.create({
     minHeight: 80,
     marginBottom: theme.spacing.md,
   },
+  buttonRow: {
+    flexDirection: 'row',
+    gap: theme.spacing.md,
+  },
+  micButton: {
+    width: 48,
+    height: 48,
+    borderRadius: theme.borderRadius.md,
+    backgroundColor: theme.colors.surfaceLight,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   button: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
