@@ -6,7 +6,17 @@ This is a React Native mobile application built with Expo that provides an AI-po
 
 ## Recent Changes
 
-**November 8, 2025 (Latest)**: Voice Input Feature Implementation
+**November 8, 2025 (Latest)**: PostgreSQL Database Integration
+- Integrated Replit's Neon PostgreSQL database for cloud-based chat message persistence
+- Created database schema with Drizzle ORM for messages table (user_id, role, content, timestamp)
+- Built Express backend API on port 3000 with GET, POST, DELETE endpoints
+- Updated storage service to use cloud database while keeping API keys local
+- Implemented automatic message limit enforcement (20 messages per user)
+- Backend and frontend properly handle individual message saves to prevent duplicates
+- Both workflows (Expo app on 8000, API server on 3000) running successfully
+- Feature verified and architect-approved
+
+**November 8, 2025**: Voice Input Feature Implementation
 - Added VoiceInput component with Web Speech API integration
 - Voice input works in browsers with recording modal and visual feedback
 - Transcription confirmation dialog before populating text fields
@@ -86,11 +96,25 @@ Preferred communication style: Simple, everyday language.
 
 ### Data Storage Solutions
 
+**PostgreSQL Database** (Replit Neon):
+- Cloud-based chat message persistence using Replit's managed PostgreSQL
+- Messages table with user_id, role, content, and timestamp columns
+- Drizzle ORM for type-safe database queries
+- Express API backend on port 3000 for database operations
+- Automatic enforcement of 20-message limit per user
+- User ID generation and persistence for device-specific chat history
+
+**Express Backend API** (`server/index.ts`):
+- GET `/api/messages/:userId` - Retrieves last 20 messages for a user
+- POST `/api/messages` - Saves a new message and maintains 20-message cap
+- DELETE `/api/messages/:userId` - Clears all messages for a user
+- CORS enabled for cross-origin requests from Expo app
+- Running on port 3000 via tsx workflow
+
 **AsyncStorage Implementation**:
-- API key storage with timestamp metadata
-- Chat history persistence (limited to last 20 messages)
-- No external database dependencies
-- All data stored locally on device
+- API key storage with timestamp metadata (device-local for security)
+- User ID persistence for consistent chat history per device
+- Web platform support via localStorage with memory fallback
 
 **Data Models**:
 - `Message`: Chat message with role (user/assistant), content, and timestamp
