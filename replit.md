@@ -6,13 +6,25 @@ This is a React Native mobile application built with Expo that provides an AI-po
 
 ## Recent Changes
 
-**November 8, 2025 (Latest)**: Voice Input Feature Implementation
+**November 8, 2025 (Latest)**: Native Voice Input Support Added
+- Updated VoiceInput component to support iOS and Android using expo-speech-recognition
+- Voice input now works on all platforms: Web (Web Speech API), iOS, and Android
+- Automatic platform detection and appropriate API usage
+- Microphone permission handling for native platforms
+- Cross-platform error handling and user feedback
+- Voice input available in both Chat and Automation screens on all platforms
+- Feature verified and architect-approved
+
+**November 8, 2025**: Supabase Vector Database Integration Started
+- Installed @supabase/supabase-js for vector storage
+- User provided Supabase credentials
+- Awaiting SQL schema setup for pgvector integration
+
+**November 8, 2025**: Voice Input Feature Implementation (Web)
 - Added VoiceInput component with Web Speech API integration
 - Voice input works in browsers with recording modal and visual feedback
 - Transcription confirmation dialog before populating text fields
 - Integrated voice input into both Chat and Automation screens
-- Platform detection with graceful unsupported message for native platforms
-- Feature verified and architect-approved
 
 **November 8, 2025**: Complete implementation of AI Assistant app
 - Created all core services (PolarisService, AutomationService)
@@ -44,12 +56,16 @@ Preferred communication style: Simple, everyday language.
 - Dark mode as primary design language with modern, sleek aesthetic
 
 **Voice Input** (`VoiceInput.tsx`):
-- Web Speech API integration for browser-based voice recognition
+- Cross-platform voice recognition:
+  - Web: Web Speech API for browser-based recognition
+  - iOS/Android: expo-speech-recognition for native recognition
+- Automatic platform detection and appropriate API usage
 - Modal interface with recording state visualization (animated microphone icon)
 - Real-time transcription with confirmation dialog
-- Platform detection - works on web browsers, shows message for native
-- Error handling for unsupported browsers or permission denials
+- Microphone permission handling for all platforms
+- Comprehensive error handling (permission denials, no speech detected, etc.)
 - User can retry recording or confirm transcription before populating input fields
+- Works in both Chat and Automation screens
 
 **State Management**:
 - Component-level state using React hooks (useState, useEffect)
