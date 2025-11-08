@@ -5,7 +5,7 @@ export interface Message {
 }
 
 export interface AutomationStep {
-  action: 'tap' | 'type' | 'swipe' | 'scroll' | 'wait' | 'open_app';
+  action: 'tap' | 'type' | 'swipe' | 'scroll' | 'wait' | 'open_app' | 'whatsapp' | 'email' | 'call';
   target: string;
   text?: string;
   reasoning: string;

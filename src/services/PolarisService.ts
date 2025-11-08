@@ -104,22 +104,29 @@ export class PolarisService {
 
   async planTask(task: string): Promise<AutomationStep[]> {
     try {
-      const prompt = `You are an Android automation planner. Break down this task into specific automation steps.
-      
+      const prompt = `You are a mobile automation planner. Break down this task into specific automation steps.
+
+IMPORTANT: Use these REAL actions that actually work:
+- whatsapp: Send WhatsApp message (target = phone number with country code, text = message)
+- email: Send email (target = email address, text = message body)
+- call: Make phone call (target = phone number with country code)
+- wait: Wait for a few seconds
+
+DO NOT use these actions (they only simulate, don't actually work):
+- tap, type, swipe, scroll, open_app
+
 Task: ${task}
 
 Return ONLY a JSON array of steps. Each step must have:
-- action: one of [tap, type, swipe, scroll, wait, open_app]
-- target: specific element/app name
-- text: (optional) text to type
+- action: one of [whatsapp, email, call, wait]
+- target: phone number (for whatsapp/call) or email address (for email)
+- text: message content (for whatsapp/email)
 - reasoning: why this step is needed
 
-Example format:
-[
-  {"action": "open_app", "target": "Messages", "reasoning": "Need to access messaging app"},
-  {"action": "tap", "target": "New message button", "reasoning": "Start composing new message"},
-  {"action": "type", "target": "Recipient field", "text": "John", "reasoning": "Enter recipient name"}
-]
+Example formats:
+For WhatsApp: {"action": "whatsapp", "target": "1234567890", "text": "Hello John!", "reasoning": "Send WhatsApp message to John"}
+For Email: {"action": "email", "target": "[email protected]", "text": "Hello, this is a test email.", "reasoning": "Send email to John"}
+For Call: {"action": "call", "target": "1234567890", "reasoning": "Call John's phone"}
 
 Return only the JSON array, no other text.`;
 
