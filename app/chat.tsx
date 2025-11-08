@@ -18,7 +18,9 @@ import { Message } from '@/src/types';
 import { MessageBubble } from '@/src/components/MessageBubble';
 import { VoiceInput } from '@/src/components/VoiceInput';
 import { PolarisService } from '@/src/services/PolarisService';
+import { VectorStorageService } from '@/src/services/VectorStorageService';
 import { getApiKey, getChatHistory, saveChatHistory } from '@/src/utils/storage';
+import { isSupabaseConfigured } from '@/src/services/SupabaseClient';
 
 export default function ChatScreen() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -26,6 +28,8 @@ export default function ChatScreen() {
   const [loading, setLoading] = useState(false);
   const [showVoiceInput, setShowVoiceInput] = useState(false);
   const [polarisService, setPolarisService] = useState<PolarisService | null>(null);
+  const [vectorStorage, setVectorStorage] = useState<VectorStorageService | null>(null);
+  const [useVectorStorage, setUseVectorStorage] = useState(false);
   const flatListRef = useRef<FlatList>(null);
 
   useEffect(() => {
@@ -44,9 +48,35 @@ export default function ChatScreen() {
     }
 
     setPolarisService(new PolarisService(apiKey));
-    const history = await getChatHistory();
-    setMessages(history);
-    console.log('Chat initialized with', history.length, 'messages');
+    
+    const supabaseConfigured = isSupabaseConfigured();
+    console.log('Supabase configured:', supabaseConfigured);
+    
+    if (supabaseConfigured) {
+      const vectorStorageService = new VectorStorageService(apiKey);
+      setVectorStorage(vectorStorageService);
+      setUseVectorStorage(true);
+      
+      const history = await vectorStorageService.getChatHistory(50);
+      if (history !== null) {
+        setMessages(history);
+        console.log('Chat initialized with', history.length, 'messages from vector storage');
+      } else {
+        console.warn('Vector storage failed, falling back to local storage');
+        const localHistory = await getChatHistory();
+        setMessages(localHistory);
+        setUseVectorStorage(false);
+        Alert.alert(
+          'Using Local Storage',
+          'Vector database is unavailable. Using local storage for this session.'
+        );
+        console.log('Chat initialized with', localHistory.length, 'messages from local storage (fallback)');
+      }
+    } else {
+      const history = await getChatHistory();
+      setMessages(history);
+      console.log('Chat initialized with', history.length, 'messages from local storage');
+    }
   };
 
   const sendMessage = async () => {
@@ -85,7 +115,28 @@ export default function ChatScreen() {
 
       const finalMessages = [...updatedMessages, assistantMessage];
       setMessages(finalMessages);
-      await saveChatHistory(finalMessages);
+      
+      if (useVectorStorage && vectorStorage) {
+        try {
+          const userSaved = await vectorStorage.saveMessage(userMessage);
+          const assistantSaved = await vectorStorage.saveMessage(assistantMessage);
+          
+          if (userSaved && assistantSaved) {
+            console.log('Messages saved to vector storage');
+            await saveChatHistory(finalMessages);
+          } else {
+            throw new Error('Vector storage save failed');
+          }
+        } catch (error) {
+          console.warn('Vector storage failed, falling back to local storage:', error);
+          await saveChatHistory(finalMessages);
+          setUseVectorStorage(false);
+          console.log('Messages saved to local storage (fallback)');
+        }
+      } else {
+        await saveChatHistory(finalMessages);
+        console.log('Messages saved to local storage');
+      }
     } catch (error) {
       Alert.alert('Error', error instanceof Error ? error.message : 'Failed to get response');
     } finally {
@@ -104,7 +155,26 @@ export default function ChatScreen() {
           style: 'destructive',
           onPress: async () => {
             setMessages([]);
-            await saveChatHistory([]);
+            
+            if (useVectorStorage && vectorStorage) {
+              try {
+                const cleared = await vectorStorage.clearAllMessages();
+                if (cleared) {
+                  console.log('Vector storage cleared');
+                  await saveChatHistory([]);
+                } else {
+                  throw new Error('Vector storage clear failed');
+                }
+              } catch (error) {
+                console.warn('Vector storage failed, falling back to local storage:', error);
+                await saveChatHistory([]);
+                setUseVectorStorage(false);
+                console.log('Local storage cleared (fallback)');
+              }
+            } else {
+              await saveChatHistory([]);
+              console.log('Local storage cleared');
+            }
           },
         },
       ]
