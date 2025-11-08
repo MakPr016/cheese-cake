@@ -6,16 +6,7 @@ This is a React Native mobile application built with Expo that provides an AI-po
 
 ## Recent Changes
 
-**November 8, 2025 (Latest)**: Native Voice Input Support Added
-- Updated VoiceInput component to support iOS and Android using expo-speech-recognition
-- Voice input now works on all platforms: Web (Web Speech API), iOS, and Android
-- Automatic platform detection and appropriate API usage
-- Microphone permission handling for native platforms
-- Cross-platform error handling and user feedback
-- Voice input available in both Chat and Automation screens on all platforms
-- Feature verified and architect-approved
-
-**November 8, 2025**: Supabase Vector Database Integration Started
+**November 8, 2025 (Latest)**: Supabase Vector Database Integration Started
 - Installed @supabase/supabase-js for vector storage
 - User provided Supabase credentials
 - Awaiting SQL schema setup for pgvector integration
@@ -56,16 +47,14 @@ Preferred communication style: Simple, everyday language.
 - Dark mode as primary design language with modern, sleek aesthetic
 
 **Voice Input** (`VoiceInput.tsx`):
-- Cross-platform voice recognition:
-  - Web: Web Speech API for browser-based recognition
-  - iOS/Android: expo-speech-recognition for native recognition
-- Automatic platform detection and appropriate API usage
+- Web Speech API integration for browser-based voice recognition
 - Modal interface with recording state visualization (animated microphone icon)
 - Real-time transcription with confirmation dialog
-- Microphone permission handling for all platforms
-- Comprehensive error handling (permission denials, no speech detected, etc.)
+- Platform detection - works on web browsers, shows informative message on native
+- Error handling for unsupported browsers or permission denials
 - User can retry recording or confirm transcription before populating input fields
-- Works in both Chat and Automation screens
+- Available in both Chat and Automation screens
+- Note: Native mobile voice input requires a development build (not compatible with Expo Go)
 
 **State Management**:
 - Component-level state using React hooks (useState, useEffect)

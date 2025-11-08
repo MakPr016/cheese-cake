@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable, Modal, Platform, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import {
-  ExpoSpeechRecognitionModule,
-  useSpeechRecognitionEvent,
-} from 'expo-speech-recognition';
 import { theme } from '../utils/theme';
 
 interface VoiceInputProps {
@@ -24,38 +20,6 @@ export const VoiceInput: React.FC<VoiceInputProps> = ({ visible, onClose, onConf
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [recognition, setRecognition] = useState<any>(null);
-
-  // Native speech recognition events
-  useSpeechRecognitionEvent('start', () => {
-    console.log('Native speech recognition started');
-    setIsListening(true);
-    setTranscript('');
-  });
-
-  useSpeechRecognitionEvent('result', (event) => {
-    console.log('Native transcript:', event.results[0]?.transcript);
-    if (event.results[0]?.transcript) {
-      setTranscript(event.results[0].transcript);
-    }
-  });
-
-  useSpeechRecognitionEvent('end', () => {
-    console.log('Native speech recognition ended');
-    setIsListening(false);
-  });
-
-  useSpeechRecognitionEvent('error', (event) => {
-    console.error('Native speech recognition error:', event.error);
-    setIsListening(false);
-    
-    if (event.error === 'service-not-allowed') {
-      Alert.alert('Permission Denied', 'Please allow microphone access to use voice input.');
-    } else if (event.error === 'no-speech') {
-      Alert.alert('No Speech', 'No speech was detected. Please try again.');
-    } else {
-      Alert.alert('Error', `Speech recognition error: ${event.error}`);
-    }
-  });
 
   useEffect(() => {
     if (Platform.OS === 'web' && visible) {
@@ -117,48 +81,21 @@ export const VoiceInput: React.FC<VoiceInputProps> = ({ visible, onClose, onConf
     }
   }, [visible, onClose]);
 
-  const startListening = async () => {
-    setTranscript('');
-    
-    if (Platform.OS === 'web') {
-      if (recognition) {
-        try {
-          recognition.start();
-        } catch (error) {
-          console.error('Failed to start recognition:', error);
-          Alert.alert('Error', 'Failed to start voice recognition. Please try again.');
-        }
-      }
-    } else {
-      // Native platforms
+  const startListening = () => {
+    if (recognition) {
+      setTranscript('');
       try {
-        const result = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
-        if (!result.granted) {
-          Alert.alert('Permission Denied', 'Microphone permission is required for voice input.');
-          return;
-        }
-
-        ExpoSpeechRecognitionModule.start({
-          lang: 'en-US',
-          interimResults: true,
-          maxAlternatives: 1,
-          continuous: false,
-          requiresOnDeviceRecognition: false,
-        });
+        recognition.start();
       } catch (error) {
-        console.error('Failed to start native recognition:', error);
+        console.error('Failed to start recognition:', error);
         Alert.alert('Error', 'Failed to start voice recognition. Please try again.');
       }
     }
   };
 
   const stopListening = () => {
-    if (Platform.OS === 'web') {
-      if (recognition) {
-        recognition.stop();
-      }
-    } else {
-      ExpoSpeechRecognitionModule.stop();
+    if (recognition) {
+      recognition.stop();
     }
   };
 
@@ -178,16 +115,31 @@ export const VoiceInput: React.FC<VoiceInputProps> = ({ visible, onClose, onConf
   };
 
   const handleCancel = () => {
-    if (isListening) {
-      if (Platform.OS === 'web' && recognition) {
-        recognition.stop();
-      } else {
-        ExpoSpeechRecognitionModule.stop();
-      }
+    if (recognition && isListening) {
+      recognition.stop();
     }
     setTranscript('');
     onClose();
   };
+
+  if (Platform.OS !== 'web') {
+    return (
+      <Modal visible={visible} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Ionicons name="information-circle" size={48} color={theme.colors.primary} />
+            <Text style={styles.title}>Web Only Feature</Text>
+            <Text style={styles.message}>
+              Voice input currently works on web browsers only. To use it on mobile, open this app in a web browser.
+            </Text>
+            <Pressable style={styles.button} onPress={onClose}>
+              <Text style={styles.buttonText}>OK</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
+    );
+  }
 
   return (
     <Modal visible={visible} transparent animationType="slide">
