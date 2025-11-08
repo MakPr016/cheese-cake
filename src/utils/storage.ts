@@ -91,29 +91,31 @@ export const getApiKey = async (): Promise<string | null> => {
   }
 };
 
-export const saveChatHistory = async (messages: Message[]): Promise<void> => {
+export const saveMessage = async (message: Message): Promise<void> => {
   try {
     const userId = await getUserId();
     
-    for (const message of messages) {
-      await fetch(`${API_URL}/api/messages`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId,
-          role: message.role,
-          content: message.content,
-        }),
-      });
-    }
+    await fetch(`${API_URL}/api/messages`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId,
+        role: message.role,
+        content: message.content,
+      }),
+    });
     
-    console.log('Chat history saved to cloud:', messages.length, 'messages');
+    console.log('Message saved to cloud');
   } catch (error) {
-    console.error('Error saving chat history to cloud:', error);
+    console.error('Error saving message to cloud:', error);
     throw error;
   }
+};
+
+export const saveChatHistory = async (messages: Message[]): Promise<void> => {
+  console.warn('saveChatHistory is deprecated. Use saveMessage for individual messages.');
 };
 
 export const getChatHistory = async (): Promise<Message[]> => {
