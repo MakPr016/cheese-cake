@@ -69,29 +69,66 @@ export class PolarisService {
 
   async planTask(task: string): Promise<AutomationStep[]> {
     try {
-      const prompt = `You are an Android automation planner. Break down this task into specific automation steps.
-      
+      const prompt = `You are an Android automation planner using MacroDroid webhooks. Break down this task into specific automation steps.
+
+IMPORTANT: Only use these supported actions:
+- open_browser: Open the default browser
+- search_google: Search on Google  
+- open_url: Open a specific URL
+- make_call: Make a phone call
+- send_sms: Send a text message
+- open_app: Open an app (browser, messages, phone, contacts, settings, camera, gallery, maps, gmail, youtube, whatsapp, telegram)
+- tap: Tap on screen element (describe element clearly)
+- type: Type text
+- swipe: Swipe gesture
+- scroll: Scroll screen
+- go_back: Press back button
+- go_home: Go to home screen
+- wait: Wait for duration
+
 Task: ${task}
 
 Return ONLY a JSON array of steps. Each step must have:
-- action: one of [tap, type, swipe, scroll, wait, open_app]
-- target: specific element/app name
-- text: (optional) text to type
+- action: one of the actions listed above
+- target: specific element/app name/phone number/URL
+- text: (for type/send_sms actions) text to type or send
 - reasoning: why this step is needed
 
-Example format:
+Common task examples:
+
+1. "Search for pizza places"
 [
-  {"action": "open_app", "target": "Messages", "reasoning": "Need to access messaging app"},
-  {"action": "tap", "target": "New message button", "reasoning": "Start composing new message"},
-  {"action": "type", "target": "Recipient field", "text": "John", "reasoning": "Enter recipient name"}
+  {"action": "open_browser", "target": "Chrome", "reasoning": "Open browser to search"},
+  {"action": "search_google", "target": "Search bar", "text": "pizza places near me", "reasoning": "Search for pizza restaurants"}
 ]
+
+2. "Call John"
+[
+  {"action": "make_call", "target": "John", "reasoning": "Initiate phone call to contact"}
+]
+
+3. "Send message to Mom saying I'll be late"
+[
+  {"action": "send_sms", "target": "Mom", "text": "I'll be late", "reasoning": "Send text message"}
+]
+
+4. "Open YouTube and search for cooking videos"
+[
+  {"action": "open_app", "target": "YouTube", "reasoning": "Launch YouTube app"},
+  {"action": "wait", "target": "App load", "reasoning": "Wait for app to open"},
+  {"action": "tap", "target": "Search button", "reasoning": "Open search"},
+  {"action": "type", "target": "Search field", "text": "cooking videos", "reasoning": "Enter search query"},
+  {"action": "tap", "target": "Search icon", "reasoning": "Execute search"}
+]
+
+Now plan for: ${task}
 
 Return only the JSON array, no other text.`;
 
       const response = await this.client.chat.completions.create({
         model: this.model,
         messages: [{ role: 'user', content: prompt }],
-        max_tokens: 800,
+        max_tokens: 1000,
       });
 
       const content = response.choices[0]?.message?.content || '[]';
@@ -101,24 +138,162 @@ Return only the JSON array, no other text.`;
         const jsonStr = jsonMatch ? jsonMatch[0] : content;
         const steps = JSON.parse(jsonStr);
         
-        return steps.map((step: any) => ({
-          ...step,
-          status: 'pending' as const,
-        }));
+        const normalizedSteps = steps.map((step: any) => {
+          const normalized: AutomationStep = {
+            action: step.action,
+            target: step.target || 'Unknown',
+            reasoning: step.reasoning || 'No reasoning provided',
+            status: 'pending' as const,
+          };
+          
+          if (step.text) normalized.text = step.text;
+          if (step.duration) normalized.duration = step.duration;
+          if (step.x !== undefined) normalized.x = step.x;
+          if (step.y !== undefined) normalized.y = step.y;
+          if (step.direction) normalized.direction = step.direction;
+          
+          return normalized;
+        });
+        
+        const supportedActions = [
+          'open_browser', 'search_google', 'open_url', 'make_call', 
+          'send_sms', 'open_app', 'tap', 'type', 'swipe', 'scroll',
+          'go_back', 'go_home', 'wait'
+        ];
+        
+        const validSteps = normalizedSteps.filter((step: AutomationStep) => 
+          supportedActions.includes(step.action)
+        );
+        
+        if (validSteps.length === 0) {
+          throw new Error('No valid automation steps generated');
+        }
+        
+        return validSteps;
+        
       } catch (parseError) {
         console.error('Failed to parse automation steps:', content);
-        return [
-          {
-            action: 'tap' as const,
-            target: task,
-            reasoning: 'Manual planning required - AI response was not in expected format',
-            status: 'pending' as const,
-          },
-        ];
+        return this.createFallbackPlan(task);
       }
     } catch (error) {
       console.error('Task planning error:', error);
       throw new Error(`Failed to plan task: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
+  private createFallbackPlan(task: string): AutomationStep[] {
+    const lowerTask = task.toLowerCase();
+    
+    if (lowerTask.includes('search') || lowerTask.includes('google') || lowerTask.includes('find')) {
+      const searchQuery = task.replace(/search|google|find|for|on/gi, '').trim();
+      return [
+        {
+          action: 'open_browser',
+          target: 'Browser',
+          reasoning: 'Open browser for search',
+          status: 'pending',
+        },
+        {
+          action: 'search_google',
+          target: 'Search',
+          text: searchQuery || task,
+          reasoning: 'Search for requested content',
+          status: 'pending',
+        },
+      ];
+    }
+    
+    if (lowerTask.includes('call')) {
+      const contact = task.replace(/call/gi, '').trim();
+      return [
+        {
+          action: 'make_call',
+          target: contact || 'Unknown Contact',
+          reasoning: 'Make phone call',
+          status: 'pending',
+        },
+      ];
+    }
+    
+    if (lowerTask.includes('message') || lowerTask.includes('text') || lowerTask.includes('sms')) {
+      return [
+        {
+          action: 'send_sms',
+          target: 'Contact',
+          text: task,
+          reasoning: 'Send text message',
+          status: 'pending',
+        },
+      ];
+    }
+    
+    if (lowerTask.includes('open')) {
+      const app = task.replace(/open|app|application/gi, '').trim();
+      return [
+        {
+          action: 'open_app',
+          target: app || 'App',
+          reasoning: 'Open requested application',
+          status: 'pending',
+        },
+      ];
+    }
+    
+    return [
+      {
+        action: 'tap',
+        target: task,
+        reasoning: 'Manual automation required - task needs more specific instructions',
+        status: 'pending',
+      },
+    ];
+  }
+
+  async refinePlan(
+    originalTask: string,
+    steps: AutomationStep[],
+    failedStepIndex: number,
+    errorMessage: string
+  ): Promise<AutomationStep[]> {
+    try {
+      const prompt = `An automation plan failed. Help fix it.
+
+Original task: ${originalTask}
+
+Failed at step ${failedStepIndex + 1}:
+${JSON.stringify(steps[failedStepIndex], null, 2)}
+
+Error: ${errorMessage}
+
+Original plan:
+${JSON.stringify(steps, null, 2)}
+
+Please provide a corrected automation plan that will work. Consider:
+- Was the target too vague?
+- Does the action need a wait step before it?
+- Should we use a different action?
+
+Return only the corrected JSON array of steps.`;
+
+      const response = await this.client.chat.completions.create({
+        model: this.model,
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: 1000,
+      });
+
+      const content = response.choices[0]?.message?.content || '[]';
+      const jsonMatch = content.match(/\[[\s\S]*\]/);
+      const jsonStr = jsonMatch ? jsonMatch[0] : content;
+      const refinedSteps = JSON.parse(jsonStr);
+      
+      return refinedSteps.map((step: any) => ({
+        ...step,
+        status: 'pending' as const,
+      }));
+      
+    } catch (error) {
+      console.error('Plan refinement error:', error);
+      return steps;
     }
   }
 }

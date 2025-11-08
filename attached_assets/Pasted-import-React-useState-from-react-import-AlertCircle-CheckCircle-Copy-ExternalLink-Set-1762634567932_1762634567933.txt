@@ -1,0 +1,389 @@
+import React, { useState } from 'react';
+import { AlertCircle, CheckCircle, Copy, ExternalLink, Settings } from 'lucide-react';
+
+const MacroDroidSetup = () => {
+  const [copiedWebhook, setCopiedWebhook] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'setup' | 'macros' | 'test'>('setup');
+
+  const webhooks = [
+    { key: 'open_browser', name: 'Open Browser', description: 'Opens default browser app' },
+    { key: 'search_google', name: 'Google Search', description: 'Search on Google' },
+    { key: 'open_url', name: 'Open URL', description: 'Open specific URL in browser' },
+    { key: 'make_call', name: 'Make Call', description: 'Dial phone number' },
+    { key: 'send_sms', name: 'Send SMS', description: 'Send text message' },
+    { key: 'open_app', name: 'Open App', description: 'Launch any installed app' },
+    { key: 'tap', name: 'Tap Screen', description: 'Simulate screen tap' },
+    { key: 'type', name: 'Type Text', description: 'Type text input' },
+    { key: 'swipe', name: 'Swipe', description: 'Swipe gesture' },
+    { key: 'scroll', name: 'Scroll', description: 'Scroll screen' },
+    { key: 'go_back', name: 'Go Back', description: 'Press back button' },
+    { key: 'go_home', name: 'Go Home', description: 'Go to home screen' },
+    { key: 'wait', name: 'Wait', description: 'Wait for duration' },
+  ];
+
+  const macroTemplates = [
+    {
+      name: 'Open Browser',
+      trigger: 'Webhook (Cloud)',
+      actions: [
+        { type: 'Applications', action: 'Launch Application', config: 'Chrome/Browser' }
+      ]
+    },
+    {
+      name: 'Google Search',
+      trigger: 'Webhook (Cloud)',
+      actions: [
+        { type: 'Applications', action: 'Launch Application', config: 'Chrome/Browser' },
+        { type: 'Wait', action: 'Wait', config: '1 second' },
+        { type: 'UI Interaction', action: 'Set Text/Value', config: 'Search bar' },
+        { type: 'UI Interaction', action: 'Press Enter', config: '' }
+      ]
+    },
+    {
+      name: 'Make Call',
+      trigger: 'Webhook (Cloud)',
+      actions: [
+        { type: 'Phone', action: 'Make Call', config: 'Variable: contact_name' }
+      ]
+    },
+    {
+      name: 'Send SMS',
+      trigger: 'Webhook (Cloud)',
+      actions: [
+        { type: 'Phone', action: 'Send SMS', config: 'To: [contact], Message: [text]' }
+      ]
+    },
+    {
+      name: 'Open App',
+      trigger: 'Webhook (Cloud)',
+      actions: [
+        { type: 'Applications', action: 'Launch Application', config: 'Variable: app_name' }
+      ]
+    },
+    {
+      name: 'Tap Screen',
+      trigger: 'Webhook (Cloud)',
+      actions: [
+        { type: 'UI Interaction', action: 'Click UI Element', config: 'Variable: target_element' }
+      ]
+    },
+    {
+      name: 'Type Text',
+      trigger: 'Webhook (Cloud)',
+      actions: [
+        { type: 'UI Interaction', action: 'Set Text/Value', config: 'Variable: text_to_type' }
+      ]
+    },
+  ];
+
+  const copyWebhookId = (key: string) => {
+    const webhookId = `WEBHOOK_${key.toUpperCase()}`;
+    navigator.clipboard.writeText(webhookId);
+    setCopiedWebhook(key);
+    setTimeout(() => setCopiedWebhook(null), 2000);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white p-6">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold mb-2">MacroDroid Setup Guide</h1>
+          <p className="text-slate-300">Configure MacroDroid for Android automation</p>
+        </div>
+
+        {/* Tabs */}
+        <div className="flex gap-2 mb-6 border-b border-slate-700">
+          {['setup', 'macros', 'test'].map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab as any)}
+              className={`px-6 py-3 font-medium transition-all ${
+                activeTab === tab
+                  ? 'border-b-2 border-purple-400 text-white'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              {tab === 'setup' && '1. Setup'}
+              {tab === 'macros' && '2. Create Macros'}
+              {tab === 'test' && '3. Test'}
+            </button>
+          ))}
+        </div>
+
+        {/* Setup Tab */}
+        {activeTab === 'setup' && (
+          <div className="space-y-6">
+            {/* Step 1 */}
+            <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+              <div className="flex items-start gap-4">
+                <div className="bg-purple-600 text-white rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 font-bold">
+                  1
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-semibold mb-3">Install MacroDroid</h3>
+                  <p className="text-slate-300 mb-4">
+                    Download and install MacroDroid from Google Play Store
+                  </p>
+                  <a
+                    href="https://play.google.com/store/apps/details?id=com.arlosoft.macrodroid"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition-colors"
+                  >
+                    <ExternalLink size={16} />
+                    Open Play Store
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 2 */}
+            <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+              <div className="flex items-start gap-4">
+                <div className="bg-purple-600 text-white rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 font-bold">
+                  2
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-semibold mb-3">Enable Accessibility Service</h3>
+                  <p className="text-slate-300 mb-4">
+                    MacroDroid needs accessibility permissions to control your device:
+                  </p>
+                  <ol className="list-decimal list-inside space-y-2 text-slate-300">
+                    <li>Open MacroDroid app</li>
+                    <li>Go to Settings → Accessibility</li>
+                    <li>Enable "MacroDroid Accessibility Service"</li>
+                    <li>Grant all requested permissions</li>
+                  </ol>
+                  <div className="mt-4 bg-amber-900/30 border border-amber-700 rounded-lg p-4">
+                    <div className="flex gap-3">
+                      <AlertCircle className="text-amber-400 flex-shrink-0" size={20} />
+                      <p className="text-amber-200 text-sm">
+                        This is required for MacroDroid to interact with apps and UI elements
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 3 */}
+            <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+              <div className="flex items-start gap-4">
+                <div className="bg-purple-600 text-white rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 font-bold">
+                  3
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-semibold mb-3">Enable Cloud Webhooks</h3>
+                  <p className="text-slate-300 mb-4">
+                    Webhooks allow your app to trigger MacroDroid macros:
+                  </p>
+                  <ol className="list-decimal list-inside space-y-2 text-slate-300">
+                    <li>Open MacroDroid → Settings</li>
+                    <li>Scroll to "Cloud Services"</li>
+                    <li>Enable "Webhook Trigger"</li>
+                    <li>Sign up for free MacroDroid Cloud account if needed</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+
+            {/* Webhook List */}
+            <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+              <h3 className="text-xl font-semibold mb-4">Required Webhooks</h3>
+              <p className="text-slate-300 mb-4">
+                You'll create macros for these automation actions:
+              </p>
+              <div className="grid gap-3">
+                {webhooks.map((webhook) => (
+                  <div
+                    key={webhook.key}
+                    className="bg-slate-900 rounded-lg p-4 border border-slate-700"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-medium text-white">{webhook.name}</h4>
+                        <p className="text-sm text-slate-400">{webhook.description}</p>
+                      </div>
+                      <button
+                        onClick={() => copyWebhookId(webhook.key)}
+                        className="flex items-center gap-2 bg-slate-700 hover:bg-slate-600 px-3 py-2 rounded transition-colors text-sm"
+                      >
+                        {copiedWebhook === webhook.key ? (
+                          <>
+                            <CheckCircle size={16} className="text-green-400" />
+                            Copied
+                          </>
+                        ) : (
+                          <>
+                            <Copy size={16} />
+                            Copy ID
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Macros Tab */}
+        {activeTab === 'macros' && (
+          <div className="space-y-6">
+            <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+              <h3 className="text-xl font-semibold mb-4">Creating Macros in MacroDroid</h3>
+              <p className="text-slate-300 mb-6">
+                For each automation action, create a macro following this pattern:
+              </p>
+
+              {macroTemplates.map((template, idx) => (
+                <div key={idx} className="mb-6 bg-slate-900 rounded-lg p-5 border border-slate-700">
+                  <h4 className="font-bold text-lg mb-3 text-purple-300">{template.name}</h4>
+                  
+                  {/* Trigger */}
+                  <div className="mb-4">
+                    <div className="text-sm font-medium text-slate-400 mb-2">TRIGGER:</div>
+                    <div className="bg-blue-900/30 border border-blue-700 rounded-lg p-3">
+                      <div className="font-medium text-blue-300">{template.trigger}</div>
+                      <div className="text-sm text-slate-400 mt-1">
+                        Name your webhook: "{template.name}"
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div>
+                    <div className="text-sm font-medium text-slate-400 mb-2">ACTIONS:</div>
+                    <div className="space-y-2">
+                      {template.actions.map((action, actionIdx) => (
+                        <div
+                          key={actionIdx}
+                          className="bg-green-900/30 border border-green-700 rounded-lg p-3"
+                        >
+                          <div className="font-medium text-green-300">{action.action}</div>
+                          <div className="text-sm text-slate-400 mt-1">
+                            Category: {action.type}
+                          </div>
+                          {action.config && (
+                            <div className="text-sm text-slate-300 mt-1">
+                              Config: {action.config}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Steps */}
+                  <div className="mt-4 bg-slate-800 rounded p-3 text-sm text-slate-300">
+                    <div className="font-medium mb-2">Quick Steps:</div>
+                    <ol className="list-decimal list-inside space-y-1">
+                      <li>Tap "+" to create new macro</li>
+                      <li>Add Trigger → Connectivity → Webhook (Cloud)</li>
+                      <li>Name it: "{template.name}"</li>
+                      <li>Add actions as shown above</li>
+                      <li>Save macro</li>
+                      <li>Copy the webhook URL from macro settings</li>
+                    </ol>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Important Notes */}
+            <div className="bg-amber-900/30 border border-amber-700 rounded-lg p-6">
+              <div className="flex gap-3">
+                <AlertCircle className="text-amber-400 flex-shrink-0" size={24} />
+                <div>
+                  <h4 className="font-semibold text-amber-200 mb-2">Important Notes</h4>
+                  <ul className="space-y-2 text-amber-200 text-sm">
+                    <li>• Use Variables in macros to accept dynamic data from webhooks</li>
+                    <li>• Test each macro individually before integrating</li>
+                    <li>• Some actions may require additional app permissions</li>
+                    <li>• Keep MacroDroid app running in background for webhooks to work</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Test Tab */}
+        {activeTab === 'test' && (
+          <div className="space-y-6">
+            <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+              <h3 className="text-xl font-semibold mb-4">Testing Your Setup</h3>
+              
+              <div className="space-y-4">
+                <div className="bg-slate-900 rounded-lg p-5 border border-slate-700">
+                  <h4 className="font-semibold mb-3 text-purple-300">Test Individual Webhook</h4>
+                  <ol className="list-decimal list-inside space-y-2 text-slate-300">
+                    <li>Open MacroDroid app</li>
+                    <li>Find your macro in the list</li>
+                    <li>Tap the "Test" button (play icon)</li>
+                    <li>Verify the action executes correctly</li>
+                  </ol>
+                </div>
+
+                <div className="bg-slate-900 rounded-lg p-5 border border-slate-700">
+                  <h4 className="font-semibold mb-3 text-purple-300">Test from Your App</h4>
+                  <ol className="list-decimal list-inside space-y-2 text-slate-300">
+                    <li>Update webhook IDs in AutomationService.ts</li>
+                    <li>Create a simple automation plan (e.g., "open browser")</li>
+                    <li>Click "Execute Automation"</li>
+                    <li>Watch the automation run on your device</li>
+                  </ol>
+                </div>
+
+                <div className="bg-slate-900 rounded-lg p-5 border border-slate-700">
+                  <h4 className="font-semibold mb-3 text-purple-300">Common Issues</h4>
+                  <div className="space-y-3 text-sm">
+                    <div>
+                      <div className="font-medium text-red-300">Webhook not triggering:</div>
+                      <div className="text-slate-400">→ Check internet connection and MacroDroid Cloud login</div>
+                    </div>
+                    <div>
+                      <div className="font-medium text-red-300">Action fails silently:</div>
+                      <div className="text-slate-400">→ Verify accessibility permissions are enabled</div>
+                    </div>
+                    <div>
+                      <div className="font-medium text-red-300">App doesn't open:</div>
+                      <div className="text-slate-400">→ Check if app is installed and package name is correct</div>
+                    </div>
+                    <div>
+                      <div className="font-medium text-red-300">Text not typing:</div>
+                      <div className="text-slate-400">→ Add a wait step before typing action</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Success Message */}
+            <div className="bg-green-900/30 border border-green-700 rounded-lg p-6">
+              <div className="flex gap-3">
+                <CheckCircle className="text-green-400 flex-shrink-0" size={24} />
+                <div>
+                  <h4 className="font-semibold text-green-200 mb-2">Ready to Automate!</h4>
+                  <p className="text-green-200 text-sm">
+                    Once all webhooks are working, your app can execute complex automation tasks.
+                    Try commands like "Search for pizza places" or "Send message to John".
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Footer */}
+        <div className="mt-8 pt-6 border-t border-slate-700 text-center text-slate-400 text-sm">
+          <p>Need help? Check MacroDroid documentation or community forums</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default MacroDroidSetup;
