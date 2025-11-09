@@ -2,138 +2,171 @@
 
 ## Project Overview
 
-This is a React Native mobile application built with Expo that provides an AI-powered assistant with two primary modes: **Chat Mode** for conversational Q&A and **Automation Mode** for task execution planning and real-world automation on Android devices. The app understands natural language commands and can automatically execute complex tasks like sending WhatsApp messages, making calls, opening apps, and controlling the device through ADB (Android Debug Bridge).[10]
+This is a React Native mobile application built with Expo that provides an AI-powered assistant with two primary modes: **Chat Mode** for conversational Q&A and **Automation Mode** for task execution planning and real-world automation on Android devices. The app understands natural language commands and can automatically execute complex tasks like sending WhatsApp messages, making calls, opening apps, and controlling the device through ADB (Android Debug Bridge).
 
 ### Core Features
 
-- **Intelligent Contact Resolution**: No phone numbers needed - use names like "Jutin" with fuzzy matching[10]
-- **Voice Control**: Cross-platform voice input with transcription powered by AssemblyAI and Whisper[10]
-- **Multi-Step Workflows**: Chain multiple actions together with automatic timing and delays[10]
-- **Unlimited Chat History**: Semantic search through vector storage using Supabase and pgvector[10]
-- **Real Automation**: Execute tasks via ADB commands on connected Android devices[10]
+- **Intelligent Contact Resolution**: No phone numbers needed - use names like "Jutin" with fuzzy matching
+- **Voice Control**: Cross-platform voice input with transcription powered by AssemblyAI and Whisper
+- **Multi-Step Workflows**: Chain multiple actions together with automatic timing and delays
+- **Unlimited Chat History**: Semantic search through vector storage using Supabase and pgvector
+- **Real Automation**: Execute tasks via ADB commands on connected Android devices
 
-Here is your mobile app:
-![WhatsApp Image 2025-11-09 at 06 17 10_366fa263](https://github.com/user-attachments/assets/c96c9796-cf15-478a-978c-871664651b1a)
+---
 
-Add your open router API key:
-![WhatsApp Image 2025-11-09 at 06 17 12_5a19c2b1](https://github.com/user-attachments/assets/890a29f5-ce61-488e-97f2-ddf141a7cce0)
+## 📱 App Screenshots
 
-Explore all the options:
-![WhatsApp Image 2025-11-09 at 06 17 10_5c4c3348](https://github.com/user-attachments/assets/5d0d12bb-d053-4ecc-8f12-92ddd1a4f197)
+<div align="center">
 
-Send chats using our app automatically:
-![WhatsApp Image 2025-11-09 at 06 17 11_83afb50c](https://github.com/user-attachments/assets/e69a8a45-d16e-486e-b2f5-74da56fb85b2)
+### Main Interface
+<img src="https://github.com/user-attachments/assets/c96c9796-cf15-478a-978c-871664651b1a" width="250" alt="Mobile App Home Screen"/>
 
-speak with the AI:
-![WhatsApp Image 2025-11-09 at 06 17 11_2631bcd2](https://github.com/user-attachments/assets/b5bdf694-99ba-4df8-88f5-4c0daf9e1965)
+*Your AI-powered mobile assistant*
 
+---
 
-set up yout automation for hands free experience:
-![WhatsApp Image 2025-11-09 at 06 22 03_aba03ab3](https://github.com/user-attachments/assets/a2639772-663b-4ef6-b09e-56feda8c32f9)
-Automation result:
-![WhatsApp Image 2025-11-09 at 06 22 04_20c0775b](https://github.com/user-attachments/assets/5a34c2f8-3704-4c8e-8a63-3cd910795b26)
+### API Configuration
+<img src="https://github.com/user-attachments/assets/890a29f5-ce61-488e-97f2-ddf141a7cce0" width="250" alt="API Setup Screen"/>
 
+*Add your OpenRouter API key to get started*
 
-***
+---
+
+### Feature Overview
+<img src="https://github.com/user-attachments/assets/5d0d12bb-d053-4ecc-8f12-92ddd1a4f197" width="250" alt="Features Screen"/>
+
+*Explore all available automation options*
+
+---
+
+### Automated Messaging
+<img src="https://github.com/user-attachments/assets/e69a8a45-d16e-486e-b2f5-74da56fb85b2" width="250" alt="WhatsApp Automation"/>
+
+*Send WhatsApp messages automatically through the app*
+
+---
+
+### Voice Control
+<img src="https://github.com/user-attachments/assets/b5bdf694-99ba-4df8-88f5-4c0daf9e1965" width="250" alt="Voice Input"/>
+
+*Speak naturally with the AI assistant*
+
+---
+
+### Automation Setup
+<img src="https://github.com/user-attachments/assets/a2639772-663b-4ef6-b09e-56feda8c32f9" width="250" alt="Automation Configuration"/>
+
+*Set up automation workflows for hands-free experience*
+
+---
+
+### Automation Results
+<img src="https://github.com/user-attachments/assets/5a34c2f8-3704-4c8e-8a63-3cd910795b26" width="250" alt="Automation Success"/>
+
+*See your automation tasks execute successfully*
+
+</div>
+
+---
 
 ## Market Analysis
 
 ### Target Users
 
-- Android power users seeking productivity automation[10]
-- Developers testing mobile applications[10]
-- Accessibility-focused users requiring hands-free control[10]
-- Productivity enthusiasts automating repetitive tasks[10]
+- Android power users seeking productivity automation
+- Developers testing mobile applications
+- Accessibility-focused users requiring hands-free control
+- Productivity enthusiasts automating repetitive tasks
 
 ### Use Cases
 
-- **Hands-Free Device Control**: Voice commands for messaging and calls[10]
-- **Automated Messaging Workflows**: Send WhatsApp messages by name without typing numbers[10]
-- **Multi-App Task Automation**: Chain tasks across multiple applications[10]
-- **Accessibility Assistance**: Voice-driven device interaction[10]
+- **Hands-Free Device Control**: Voice commands for messaging and calls
+- **Automated Messaging Workflows**: Send WhatsApp messages by name without typing numbers
+- **Multi-App Task Automation**: Chain tasks across multiple applications
+- **Accessibility Assistance**: Voice-driven device interaction
 
 ### Competitive Advantages
 
 | Feature | Benefit |
 |---------|---------|
-| Free AI Model | Uses OpenRouter's Polaris Alpha (256K context, free tier)[10] |
-| Contact Resolution | Fuzzy matching finds contacts automatically[10] |
-| Cross-Platform Voice | Works on web, iOS, and Android[10] |
-| Vector Search | Unlimited chat history with semantic search[10] |
-| No Root Required | ADB-based automation without rooting device[10] |
+| Free AI Model | Uses OpenRouter's Polaris Alpha (256K context, free tier) |
+| Contact Resolution | Fuzzy matching finds contacts automatically |
+| Cross-Platform Voice | Works on web, iOS, and Android |
+| Vector Search | Unlimited chat history with semantic search |
+| No Root Required | ADB-based automation without rooting device |
 
-***
+---
 
 ## Tech Stack
 
 ### Frontend Technologies
 
 #### Framework & Core
-- **React Native**: 0.81.4 - Core mobile UI framework[10]
-- **Expo SDK**: 54.0.9 - Cross-platform development framework[10]
-- **React**: 19.1.0 - JavaScript UI library[10]
-- **TypeScript**: 5.9.2 - Type-safe development[10]
+- **React Native**: 0.81.4 - Core mobile UI framework
+- **Expo SDK**: 54.0.9 - Cross-platform development framework
+- **React**: 19.1.0 - JavaScript UI library
+- **TypeScript**: 5.9.2 - Type-safe development
 
 #### Navigation
-- **Expo Router**: 6.0.7 - File-based routing with typed routes[10]
-- **React Navigation Native**: 7.1.6 - Navigation library[10]
-- **React Navigation Bottom Tabs**: 7.3.10 - Tab navigation[10]
+- **Expo Router**: 6.0.7 - File-based routing with typed routes
+- **React Navigation Native**: 7.1.6 - Navigation library
+- **React Navigation Bottom Tabs**: 7.3.10 - Tab navigation
 
 #### UI & Design
-- **@expo/vector-icons**: Icons (Ionicons exclusively)[10]
-- **react-native-reanimated**: 4.1.0 - High-performance animations[10]
-- **expo-blur**: 15.0.7 - Visual effects[10]
-- **Custom themed components** with modern dark mode design[10]
+- **@expo/vector-icons**: Icons (Ionicons exclusively)
+- **react-native-reanimated**: 4.1.0 - High-performance animations
+- **expo-blur**: 15.0.7 - Visual effects
+- **Custom themed components** with modern dark mode design
 
 #### State & Storage
-- **React Hooks**: useState, useEffect for component state[10]
-- **AsyncStorage**: 2.2.0 - Local key-value storage[10]
-- **No external state management** - relies on local state and persistence[10]
+- **React Hooks**: useState, useEffect for component state
+- **AsyncStorage**: 2.2.0 - Local key-value storage
+- **No external state management** - relies on local state and persistence
 
 ### Backend & Services
 
 #### AI Integration
-- **OpenAI SDK**: 6.8.1 - API client configured for OpenRouter[10]
-- **OpenRouter API**: AI model provider at `https://openrouter.ai/api/v1`[10]
-- **Polaris Alpha Model**: Free tier, 256K context, vision-capable[10]
-- **Whisper API**: Speech-to-text transcription[10]
+- **OpenAI SDK**: 6.8.1 - API client configured for OpenRouter
+- **OpenRouter API**: AI model provider at `https://openrouter.ai/api/v1`
+- **Polaris Alpha Model**: Free tier, 256K context, vision-capable
+- **Whisper API**: Speech-to-text transcription
 
 #### Storage Solutions
-- **Supabase**: 2.80.0 - PostgreSQL with pgvector extension[10]
-- **pgvector**: Vector embeddings for semantic search[10]
-- **AsyncStorage Fallback**: Offline mode and backup storage[10]
+- **Supabase**: 2.80.0 - PostgreSQL with pgvector extension
+- **pgvector**: Vector embeddings for semantic search
+- **AsyncStorage Fallback**: Offline mode and backup storage
 
 #### Automation
-- **Node.js**: ADB Agent server runtime[10]
-- **Express.js**: REST API endpoints[10]
-- **Android Debug Bridge (ADB)**: Device control and automation[10]
+- **Node.js**: ADB Agent server runtime
+- **Express.js**: REST API endpoints
+- **Android Debug Bridge (ADB)**: Device control and automation
 
 ### Development Tools
 
-- **Jest**: 29.2.1 - Testing framework[10]
-- **ESLint**: 9.25.0 - Code linting with Expo config[10]
-- **Expo Application Services (EAS)**: Build and deployment[10]
-- **Metro Bundler**: JavaScript bundling[10]
+- **Jest**: 29.2.1 - Testing framework
+- **ESLint**: 9.25.0 - Code linting with Expo config
+- **Expo Application Services (EAS)**: Build and deployment
+- **Metro Bundler**: JavaScript bundling
 
-***
+---
 
 ## AI Models & Libraries
 
 ### 1. Polaris Alpha Model
 
-**Provider**: OpenRouter API[10]
+**Provider**: OpenRouter API
 
 **Capabilities**:
-- 256K token context window for long conversations[10]
-- Vision-capable for image analysis[10]
-- Free tier access with API key[10]
-- Chat completion and task planning[10]
+- 256K token context window for long conversations
+- Vision-capable for image analysis
+- Free tier access with API key
+- Chat completion and task planning
 
 **Use Cases**:
-- Conversational chat responses[10]
-- Breaking down tasks into automation steps[10]
-- Understanding user intent[10]
-- Generating structured JSON for automation plans[10]
+- Conversational chat responses
+- Breaking down tasks into automation steps
+- Understanding user intent
+- Generating structured JSON for automation plans
 
 **Configuration**:
 ```typescript
@@ -142,41 +175,40 @@ baseURL: "https://openrouter.ai/api/v1"
 maxTokens: 500-800 depending on use case
 ```
 
-
 ### 2. OpenAI Whisper Model
 
-**Purpose**: Speech-to-text transcription[10]
+**Purpose**: Speech-to-text transcription
 
-**Integration**: Accessed through OpenRouter's Whisper API endpoint (`openai/whisper-1`)[10]
+**Integration**: Accessed through OpenRouter's Whisper API endpoint (`openai/whisper-1`)
 
 **Workflow**:
-1. Records audio using expo-av[10]
-2. Uploads to OpenRouter[10]
-3. Polls for transcription completion[10]
-4. Returns text for user confirmation[10]
+1. Records audio using expo-av
+2. Uploads to OpenRouter
+3. Polls for transcription completion
+4. Returns text for user confirmation
 
 **Platform Support**:
-- **Native (iOS/Android)**: expo-av recording + Whisper transcription[10]
-- **Web**: Uses Web Speech API (no Whisper needed)[10]
+- **Native (iOS/Android)**: expo-av recording + Whisper transcription
+- **Web**: Uses Web Speech API (no Whisper needed)
 
 ### 3. Text Embedding Model
 
-**Model**: `text-embedding-3-small` (384 dimensions)[10]
+**Model**: `text-embedding-3-small` (384 dimensions)
 
-**Purpose**: Generates vector embeddings for semantic search[10]
+**Purpose**: Generates vector embeddings for semantic search
 
 **Implementation**:
-- Messages automatically embedded when saved to Supabase[10]
-- Enables similarity search for related conversations[10]
-- Uses HNSW indexing for efficient retrieval[10]
+- Messages automatically embedded when saved to Supabase
+- Enables similarity search for related conversations
+- Uses HNSW indexing for efficient retrieval
 
-***
+---
 
 ## Key Libraries Explained
 
 ### OpenAI SDK (6.8.1)
 
-**Purpose**: Client library for AI API communication[10]
+**Purpose**: Client library for AI API communication
 
 **Configuration**:
 ```typescript
@@ -187,21 +219,20 @@ new OpenAI({
 })
 ```
 
-
 **Features**:
-- Points to OpenRouter instead of OpenAI directly[10]
-- Handles chat completions and embeddings[10]
-- Browser-compatible configuration[10]
+- Points to OpenRouter instead of OpenAI directly
+- Handles chat completions and embeddings
+- Browser-compatible configuration
 
 ### Supabase JS (2.80.0)
 
-**Purpose**: Backend-as-a-service client[10]
+**Purpose**: Backend-as-a-service client
 
 **Features**:
-- Vector storage with pgvector extension[10]
-- PostgreSQL database access[10]
-- Automatic fallback handling[10]
-- Real-time subscriptions capability[10]
+- Vector storage with pgvector extension
+- PostgreSQL database access
+- Automatic fallback handling
+- Real-time subscriptions capability
 
 **Schema**:
 ```sql
@@ -212,118 +243,117 @@ Table: chat_messages
 - embedding: vector(384)
 ```
 
-
 ### React Native Reanimated (4.1.0)
 
-**Purpose**: High-performance animations and gestures[10]
+**Purpose**: High-performance animations and gestures
 
 **Use Cases**:
-- Smooth UI transitions[10]
-- Draggable floating bubble component[10]
-- Gesture handling[10]
-- 60fps animations on the UI thread[10]
+- Smooth UI transitions
+- Draggable floating bubble component
+- Gesture handling
+- 60fps animations on the UI thread
 
 ### AsyncStorage (2.2.0)
 
-**Purpose**: Persistent local key-value storage[10]
+**Purpose**: Persistent local key-value storage
 
 **Stored Data**:
-- OpenRouter API key with timestamp[10]
-- Chat history backup (last 20 messages)[10]
-- Fallback when vector storage fails[10]
-- Cross-platform compatibility (iOS, Android, Web)[10]
+- OpenRouter API key with timestamp
+- Chat history backup (last 20 messages)
+- Fallback when vector storage fails
+- Cross-platform compatibility (iOS, Android, Web)
 
 ### Expo AV (16.0.7)
 
-**Purpose**: Audio and video playback/recording[10]
+**Purpose**: Audio and video playback/recording
 
 **Use Case**:
-- Records voice input on native platforms[10]
-- Manages audio permissions[10]
-- Provides audio playback controls[10]
+- Records voice input on native platforms
+- Manages audio permissions
+- Provides audio playback controls
 
 ### Expo Linking (8.0.8)
 
-**Purpose**: Deep linking and URL handling[10]
+**Purpose**: Deep linking and URL handling
 
 **Automation Use**:
-- `whatsapp://` - Opens WhatsApp with pre-filled messages[10]
-- `tel:` - Initiates phone calls[10]
-- `mailto:` - Opens email client[10]
-- Opens URLs in specific browsers[10]
+- `whatsapp://` - Opens WhatsApp with pre-filled messages
+- `tel:` - Initiates phone calls
+- `mailto:` - Opens email client
+- Opens URLs in specific browsers
 
-***
+---
 
 ## ADB Automation Architecture
 
 ### ADB Agent Server
 
-**Technology**: Node.js with Express.js[10]
-**Port**: 3000[10]
-**Location**: Runs on Windows PC connected to Android device[10]
+**Technology**: Node.js with Express.js
+**Port**: 3000
+**Location**: Runs on Windows PC connected to Android device
 
 **Core Functions**:
-- Executes ADB shell commands[10]
-- Resolves contact names to phone numbers with fuzzy matching[10]
-- Controls device UI (tap, swipe, type)[10]
-- Opens apps and URLs[10]
-- Manages WhatsApp and phone automation[10]
+- Executes ADB shell commands
+- Resolves contact names to phone numbers with fuzzy matching
+- Controls device UI (tap, swipe, type)
+- Opens apps and URLs
+- Manages WhatsApp and phone automation
 
 ### Supported Actions
 
 #### Communication
 | Action | Description | Example |
 |--------|-------------|---------|
-| `whatsapp` | Send message with auto-contact resolution | `{ action: "whatsapp", target: "Jutin", text: "Hello!" }`[10] |
-| `call` | Make phone call by name | `{ action: "call", target: "Jutin" }`[10] |
-| `email` | Send email with pre-filled content | `{ action: "email", target: "john@example.com", text: "Message" }`[10] |
+| `whatsapp` | Send message with auto-contact resolution | `{ action: "whatsapp", target: "Jutin", text: "Hello!" }` |
+| `call` | Make phone call by name | `{ action: "call", target: "Jutin" }` |
+| `email` | Send email with pre-filled content | `{ action: "email", target: "john@example.com", text: "Message" }` |
 
 #### Navigation
 | Action | Description | Example |
 |--------|-------------|---------|
-| `open_url` | Open URL in specific browser | `{ action: "open_url", target: "https://instagram.com", browser: "opera" }`[10] |
-| `open_app` | Launch app by package name | `{ action: "open_app", target: "com.whatsapp" }`[10] |
-| `key` | Press hardware key | `{ action: "key", keycode: 3 }` (Home button)[10] |
+| `open_url` | Open URL in specific browser | `{ action: "open_url", target: "https://instagram.com", browser: "opera" }` |
+| `open_app` | Launch app by package name | `{ action: "open_app", target: "com.whatsapp" }` |
+| `key` | Press hardware key | `{ action: "key", keycode: 3 }` (Home button) |
 
 #### UI Control
 | Action | Description | Example |
 |--------|-------------|---------|
-| `tap` | Tap screen coordinates | `{ action: "tap", x: 500, y: 1000 }`[10] |
-| `type` | Type text input | `{ action: "type", text: "Hello World" }`[10] |
-| `swipe` | Swipe gesture | `{ action: "swipe", ... }`[10] |
-| `wait` | Delay between actions | `{ action: "wait", target: "2000" }`[10] |
+| `tap` | Tap screen coordinates | `{ action: "tap", x: 500, y: 1000 }` |
+| `type` | Type text input | `{ action: "type", text: "Hello World" }` |
+| `swipe` | Swipe gesture | `{ action: "swipe", ... }` |
+| `wait` | Delay between actions | `{ action: "wait", target: "2000" }` |
 
 ### Contact Resolution
 
 **Process**:
-1. User provides contact name (e.g., "Jutin")[10]
-2. ADB queries device contacts database[10]
-3. Fuzzy matching finds closest name[10]
-4. Returns phone number automatically[10]
+1. User provides contact name (e.g., "Jutin")
+2. ADB queries device contacts database
+3. Fuzzy matching finds closest name
+4. Returns phone number automatically
 
 **Advantages**:
-- No need to memorize phone numbers[10]
-- Works with partial names[10]
-- Case-insensitive matching[10]
-- Provides suggestions if not found[10]
+- No need to memorize phone numbers
+- Works with partial names
+- Case-insensitive matching
+- Provides suggestions if not found
 
-***
+---
 
 ## Installation & Setup
 
 ### Prerequisites
 
 #### Software Requirements
-- Node.js and npm installed[10]
-- Android SDK Platform Tools (ADB)[10]
-- Expo CLI[10]
-- Git (optional)[10]
+- Node.js and npm installed
+- Android SDK Platform Tools (ADB)
+- Expo CLI
+- Git (optional)
 
 #### Device Requirements
-- Android device with USB debugging enabled[10]
-- USB cable or WiFi connection[10]
-- Developer options enabled[10]
-- At least one contact saved[10]
+- Android device with USB debugging enabled
+- USB cable or WiFi connection
+- Developer options enabled
+- At least one contact saved
 
 ### Step 1: Install Dependencies
 
@@ -337,27 +367,25 @@ npm install
 cd ..
 ```
 
-
 ### Step 2: Set Up ADB
 
-1. **Download Android SDK Platform Tools** from https://developer.android.com/studio/releases/platform-tools[10]
-2. Extract to `C:\adb\` and add to system PATH[10]
+1. **Download Android SDK Platform Tools** from https://developer.android.com/studio/releases/platform-tools
+2. Extract to `C:\adb\` and add to system PATH
 3. **Enable USB debugging** on Android device:
-   - Go to Settings → About Phone[10]
-   - Tap Build Number 7 times (enables Developer Options)[10]
-   - Go to Settings → Developer Options[10]
-   - Enable USB Debugging[10]
+   - Go to Settings → About Phone
+   - Tap Build Number 7 times (enables Developer Options)
+   - Go to Settings → Developer Options
+   - Enable USB Debugging
 4. **Connect device** and verify:
 ```bash
 adb devices
 ```
 
-
 ### Step 3: Configure API Keys
 
-1. Open the app and navigate to API Setup screen[10]
-2. Enter your OpenRouter API key (get free key from https://openrouter.ai)[10]
-3. The key is stored locally in AsyncStorage[10]
+1. Open the app and navigate to API Setup screen
+2. Enter your OpenRouter API key (get free key from https://openrouter.ai)
+3. The key is stored locally in AsyncStorage
 
 ### Step 4: Run the Application
 
@@ -365,7 +393,6 @@ adb devices
 ```bash
 start-automation.bat
 ```
-
 
 #### Method 2: Manual Start
 ```bash
@@ -380,14 +407,13 @@ adb reverse tcp:3000 tcp:3000
 npm start
 ```
 
-
 ### Step 5: Open App on Device
 
-- Scan QR code with Expo Go app[10]
-- Or press 'a' for Android emulator[10]
-- The app will connect to `localhost:3000` (forwarded to PC via ADB)[10]
+- Scan QR code with Expo Go app
+- Or press 'a' for Android emulator
+- The app will connect to `localhost:3000` (forwarded to PC via ADB)
 
-***
+---
 
 ## Testing
 
@@ -401,14 +427,12 @@ adb devices
 curl http://localhost:3000/status
 ```
 
-
 ### Run Automated Test Suite
 
 ```bash
 cd adb-agent
 npm test
 ```
-
 
 **Expected Output**:
 ```
@@ -421,14 +445,13 @@ npm test
 🎉 All tests passed!
 ```
 
-
 ### Example Commands to Test
 
-1. **"Open Opera and open Instagram in it"**[10]
-2. **"Text Jutin on WhatsApp and ask if he is coming to the party tomorrow"**[10]
-3. **"Call Jutin"**[10]
+1. **"Open Opera and open Instagram in it"**
+2. **"Text Jutin on WhatsApp and ask if he is coming to the party tomorrow"**
+3. **"Call Jutin"**
 
-***
+---
 
 ## Network Configuration
 
@@ -437,7 +460,7 @@ npm test
 ```bash
 adb reverse tcp:3000 tcp:3000
 ```
-This allows the phone to access PC's localhost:3000[10]
+This allows the phone to access PC's localhost:3000
 
 ### WiFi ADB (Optional - No Cable)
 
@@ -455,8 +478,7 @@ adb connect 192.168.x.x:5555
 adb reverse tcp:3000 tcp:3000
 ```
 
-
-***
+---
 
 ## Troubleshooting
 
@@ -467,19 +489,18 @@ adb start-server
 adb devices
 ```
 
-
 ### Port Already in Use
-Change PORT in `adb-agent/server.js`[10]
+Change PORT in `adb-agent/server.js`
 
 ### Connection Issues
-- Verify port forwarding is active[10]
-- Check firewall settings[10]
-- Ensure device is unlocked[10]
+- Verify port forwarding is active
+- Check firewall settings
+- Ensure device is unlocked
 
 ### Contact Not Found
-- Verify contacts are synced on device[10]
-- Try full name or partial match[10]
-- Check available contacts at http://localhost:3000/contacts[10]
+- Verify contacts are synced on device
+- Try full name or partial match
+- Check available contacts at http://localhost:3000/contacts
 
 ---
 
@@ -514,8 +535,7 @@ makpr016-cheese-cake/
 └── tsconfig.json                 # TypeScript config
 ```
 
-
-***
+---
 
 ## API Endpoints
 
@@ -534,16 +554,21 @@ GET  /screenshot            - Take device screenshot
 GET  /ui-dump               - Get UI hierarchy
 ```
 
-
-***
+---
 
 ## Security & Privacy
 
-- ✅ Runs locally on your PC and device[10]
-- ✅ No data sent to external servers (except AI API)[10]
-- ✅ API keys stored locally with AsyncStorage[10]
-- ⚠️ Never expose ADB agent to the internet[10]
-- ⚠️ Only use on devices you own[10]
-- ⚠️ Be careful with automated calls/messages[10]
+- ✅ Runs locally on your PC and device
+- ✅ No data sent to external servers (except AI API)
+- ✅ API keys stored locally with AsyncStorage
+- ⚠️ Never expose ADB agent to the internet
+- ⚠️ Only use on devices you own
+- ⚠️ Be careful with automated calls/messages
 
-***
+---
+
+<div align="center">
+
+**Built with ❤️ using React Native, Expo, and ADB**
+
+</div>
