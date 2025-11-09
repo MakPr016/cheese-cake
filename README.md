@@ -12,6 +12,28 @@ This is a React Native mobile application built with Expo that provides an AI-po
 - **Unlimited Chat History**: Semantic search through vector storage using Supabase and pgvector[10]
 - **Real Automation**: Execute tasks via ADB commands on connected Android devices[10]
 
+Here is your mobile app:
+![WhatsApp Image 2025-11-09 at 06 17 10_366fa263](https://github.com/user-attachments/assets/c96c9796-cf15-478a-978c-871664651b1a)
+
+Add your open router API key
+![WhatsApp Image 2025-11-09 at 06 17 12_5a19c2b1](https://github.com/user-attachments/assets/890a29f5-ce61-488e-97f2-ddf141a7cce0)
+
+Explore all the options
+![WhatsApp Image 2025-11-09 at 06 17 10_5c4c3348](https://github.com/user-attachments/assets/5d0d12bb-d053-4ecc-8f12-92ddd1a4f197)
+
+Send chats using our app automatically
+![WhatsApp Image 2025-11-09 at 06 17 11_83afb50c](https://github.com/user-attachments/assets/e69a8a45-d16e-486e-b2f5-74da56fb85b2)
+
+speak with the AI
+![WhatsApp Image 2025-11-09 at 06 17 11_2631bcd2](https://github.com/user-attachments/assets/b5bdf694-99ba-4df8-88f5-4c0daf9e1965)
+
+
+set up yout automation for hands free experience
+![WhatsApp Image 2025-11-09 at 06 22 03_aba03ab3](https://github.com/user-attachments/assets/a2639772-663b-4ef6-b09e-56feda8c32f9)
+Automation result
+![WhatsApp Image 2025-11-09 at 06 22 04_20c0775b](https://github.com/user-attachments/assets/5a34c2f8-3704-4c8e-8a63-3cd910795b26)
+
+
 ***
 
 ## Market Analysis
