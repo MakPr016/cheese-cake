@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  adb-server:
+    build: .
+    container_name: adb-automation-server
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - PYTHONUNBUFFERED=1
+    # For ADB over WiFi - device must be accessible
+    # network_mode: "host"  # Uncomment for ADB over WiFi
+    restart: unless-stopped
+    volumes:
+      # Persist ADB keys for device authorization
+      - adb-keys:/root/.android
+    # For USB device access (only works on local Docker, not cloud)
+    # devices:
+    #   - /dev/bus/usb:/dev/bus/usb
+    # privileged: true
+
+volumes:
+  adb-keys:

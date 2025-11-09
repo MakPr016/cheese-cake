@@ -1,4 +1,6 @@
 import OpenAI from 'openai';
+import Constants from 'expo-constants';
+import * as FileSystem from 'expo-file-system/legacy';
 import { Message, AutomationStep } from '../types';
 
 export class PolarisService {
@@ -71,31 +73,77 @@ export class PolarisService {
 
   async transcribeAudio(audioUri: string): Promise<string> {
     try {
-      const formData = new FormData();
-      
-      formData.append('file', {
-        uri: audioUri,
-        type: 'audio/m4a',
-        name: 'audio.m4a',
-      } as any);
-      formData.append('model', 'openai/whisper-1');
-
-      const transcriptionResponse = await fetch('https://openrouter.ai/api/v1/audio/transcriptions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
-        },
-        body: formData,
-      });
-
-      if (!transcriptionResponse.ok) {
-        const errorText = await transcriptionResponse.text();
-        console.error('Transcription API error:', errorText);
-        throw new Error(`Transcription failed: ${transcriptionResponse.statusText}`);
+      const aaiKey = (Constants.expoConfig?.extra as any)?.ASSEMBLYAI_API_KEY as string | undefined;
+      if (!aaiKey) {
+        throw new Error('Missing AssemblyAI API key in app config (expo.extra.ASSEMBLYAI_API_KEY)');
       }
 
-      const result = await transcriptionResponse.json();
-      return result.text || '';
+      console.log('Reading audio file from:', audioUri);
+
+      // 1) Read the audio file using fetch (works with file:// URIs in React Native)
+      const fileResponse = await fetch(audioUri);
+      const audioBlob = await fileResponse.blob();
+
+      // 2) Upload to AssemblyAI
+      const uploadRes = await fetch('https://api.assemblyai.com/v2/upload', {
+        method: 'POST',
+        headers: {
+          authorization: aaiKey,
+        },
+        body: audioBlob,
+      });
+      if (!uploadRes.ok) {
+        const errText = await uploadRes.text();
+        console.error('AssemblyAI upload error:', errText);
+        throw new Error(`Upload failed: ${uploadRes.status} ${uploadRes.statusText}`);
+      }
+      const uploadJson = await uploadRes.json();
+      const uploadUrl = uploadJson.upload_url as string;
+      if (!uploadUrl) {
+        throw new Error('AssemblyAI upload did not return upload_url');
+      }
+
+      // 3) Create transcript
+      const createRes = await fetch('https://api.assemblyai.com/v2/transcript', {
+        method: 'POST',
+        headers: {
+          authorization: aaiKey,
+          'content-type': 'application/json',
+          accept: 'application/json',
+        },
+        body: JSON.stringify({ audio_url: uploadUrl }),
+      });
+      if (!createRes.ok) {
+        const errText = await createRes.text();
+        console.error('AssemblyAI transcript create error:', errText);
+        throw new Error(`Transcript creation failed: ${createRes.status} ${createRes.statusText}`);
+      }
+      const createJson = await createRes.json();
+      const transcriptId = createJson.id as string;
+      if (!transcriptId) {
+        throw new Error('AssemblyAI did not return a transcript id');
+      }
+
+      // 4) Poll until completed
+      const poll = async (): Promise<string> => {
+        const statusRes = await fetch(`https://api.assemblyai.com/v2/transcript/${transcriptId}`, {
+          headers: { authorization: aaiKey, accept: 'application/json' },
+        });
+        if (!statusRes.ok) {
+          const errText = await statusRes.text();
+          console.error('AssemblyAI poll error:', errText);
+          throw new Error(`Polling failed: ${statusRes.status} ${statusRes.statusText}`);
+        }
+        const statusJson = await statusRes.json();
+        const status = statusJson.status as string;
+        if (status === 'completed') return statusJson.text as string;
+        if (status === 'error') throw new Error(statusJson.error || 'Transcription error');
+        await new Promise(r => setTimeout(r, 1500));
+        return poll();
+      };
+
+      const text = await poll();
+      return text || '';
     } catch (error) {
       console.error('Audio transcription error:', error);
       throw new Error(`Failed to transcribe audio: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -104,29 +152,42 @@ export class PolarisService {
 
   async planTask(task: string): Promise<AutomationStep[]> {
     try {
-      const prompt = `You are a mobile automation planner. Break down this task into specific automation steps.
+      const prompt = `You are a mobile automation planner using ADB (Android Debug Bridge). Break down this task into specific automation steps.
 
-IMPORTANT: Use these REAL actions that actually work:
-- whatsapp: Send WhatsApp message (target = phone number with country code, text = message)
-- email: Send email (target = email address, text = message body)
-- call: Make phone call (target = phone number with country code)
-- wait: Wait for a few seconds
+AVAILABLE ACTIONS:
+- open_url: Open URL in browser (target = URL, browser = "opera"|"chrome"|"default")
+- open_app: Launch an app (target = package name like "com.instagram.android")
+- whatsapp: Send WhatsApp message (target = contact name or phone, text = message)
+- call: Make phone call (target = contact name or phone number)
+- email: Send email (target = email address, text = message, subject = optional)
+- wait: Wait/delay (target = milliseconds, e.g., "2000" for 2 seconds)
+- tap: Tap screen (x, y coordinates)
+- type: Type text (text = content to type)
+- key: Press key (keycode = HOME:3, BACK:4, ENTER:66)
 
-DO NOT use these actions (they only simulate, don't actually work):
-- tap, type, swipe, scroll, open_app
+IMPORTANT RULES:
+1. Contact names will be AUTO-RESOLVED - you can use "Jutin" instead of phone numbers
+2. For Instagram/social media, use open_url with the browser parameter
+3. Add wait steps between actions (1000-3000ms) for apps to load
+4. Use descriptive reasoning for each step
 
 Task: ${task}
 
 Return ONLY a JSON array of steps. Each step must have:
-- action: one of [whatsapp, email, call, wait]
-- target: phone number (for whatsapp/call) or email address (for email)
-- text: message content (for whatsapp/email)
+- action: one of the available actions above
+- target: the main target (URL, contact name, phone, email, etc.)
+- text: message content (for whatsapp/email/type)
+- browser: browser name (for open_url, e.g., "opera")
+- subject: email subject (optional, for email)
+- x, y: coordinates (for tap)
+- keycode: key code (for key)
 - reasoning: why this step is needed
 
 Example formats:
-For WhatsApp: {"action": "whatsapp", "target": "1234567890", "text": "Hello John!", "reasoning": "Send WhatsApp message to John"}
-For Email: {"action": "email", "target": "[email protected]", "text": "Hello, this is a test email.", "reasoning": "Send email to John"}
-For Call: {"action": "call", "target": "1234567890", "reasoning": "Call John's phone"}
+Open URL: {"action": "open_url", "target": "https://instagram.com", "browser": "opera", "reasoning": "Open Instagram in Opera browser"}
+WhatsApp: {"action": "whatsapp", "target": "Jutin", "text": "Are you coming?", "reasoning": "Message Jutin on WhatsApp"}
+Call: {"action": "call", "target": "Jutin", "reasoning": "Call Jutin"}
+Wait: {"action": "wait", "target": "2000", "reasoning": "Wait for app to load"}
 
 Return only the JSON array, no other text.`;
 
@@ -151,8 +212,8 @@ Return only the JSON array, no other text.`;
         console.error('Failed to parse automation steps:', content);
         return [
           {
-            action: 'tap' as const,
-            target: task,
+            action: 'wait' as const,
+            target: '1000',
             reasoning: 'Manual planning required - AI response was not in expected format',
             status: 'pending' as const,
           },

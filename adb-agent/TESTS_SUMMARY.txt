@@ -1,0 +1,117 @@
+╔════════════════════════════════════════════════════════════════╗
+║                  ADB AUTOMATION TEST SUITE                     ║
+║                     Quick Reference                            ║
+╚════════════════════════════════════════════════════════════════╝
+
+📋 RUN TESTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Option 1: npm test
+  Option 2: run-tests.bat
+  Option 3: node run-tests.js
+
+⚙️  PREREQUISITES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✓ ADB agent running (npm start)
+  ✓ Device connected (adb devices)
+  ✓ USB debugging enabled
+  ✓ Screen unlocked
+
+🧪 TESTS INCLUDED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  1. Connection Test
+     └─ Verifies agent + device connection
+
+  2. Get All Contacts
+     └─ Retrieves and displays contacts
+
+  3. Search Contact
+     └─ Tests intelligent contact resolution
+
+  4. Open URL in Browser
+     └─ Opens Instagram in Opera
+
+  5. WhatsApp Message
+     └─ Sends test message (manual send may be needed)
+
+  6. Phone Call
+     └─ Initiates call (CANCEL IMMEDIATELY!)
+
+  7. Complete Workflow
+     └─ Multi-step automation test
+
+⏱️  EXPECTED DURATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Total: ~25-30 seconds
+  Individual tests: 1-4 seconds each
+
+📊 OUTPUT FORMAT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✅ Green  = Success
+  ❌ Red    = Error
+  ⚠️  Yellow = Warning
+  ℹ️  Cyan   = Info
+
+🎯 SUCCESS CRITERIA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✓ All tests pass
+  ✓ No errors in output
+  ✓ Apps open correctly
+  ✓ Contact resolution works
+  ✓ Actions execute smoothly
+
+⚠️  MANUAL ACTIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  • WhatsApp: Tap "Send" if needed
+  • Phone Call: CANCEL IMMEDIATELY
+  • Browser: Verify page loads
+
+🔧 CUSTOMIZATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Edit run-tests.js:
+  • Line 160: Change test contact
+  • Line 170+: Add custom tests
+  • Line 200+: Modify workflows
+
+🐛 TROUBLESHOOTING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Problem                  Solution
+  ─────────────────────────────────────────────────────
+  Agent not responding     npm start
+  Device not found         adb devices
+  Contact not found        Tests use first contact
+  Port in use              Change PORT in server.js
+  Tests hang               Restart ADB, check device
+
+📚 DOCUMENTATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  TEST_README.md        - Full test documentation
+  QUICK_TEST_GUIDE.md   - Quick start guide
+  TESTING_GUIDE.md      - Manual test scenarios
+  ADB_SETUP_GUIDE.md    - Setup instructions
+
+🚀 QUICK START
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Terminal 1:
+  $ cd adb-agent
+  $ npm start
+
+  Terminal 2:
+  $ cd adb-agent
+  $ npm test
+
+  Watch the magic happen! ✨
+
+╔════════════════════════════════════════════════════════════════╗
+║  For detailed information, see TEST_README.md                  ║
+╚════════════════════════════════════════════════════════════════╝

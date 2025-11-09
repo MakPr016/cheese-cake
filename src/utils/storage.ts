@@ -4,6 +4,7 @@ import { Message, ApiKeyConfig } from '../types';
 
 const KEYS = {
   API_KEY: '@ai_assistant_api_key',
+  STT_API_KEY: '@ai_assistant_stt_api_key',
   CHAT_HISTORY: '@ai_assistant_chat_history',
 };
 
@@ -71,6 +72,37 @@ export const getApiKey = async (): Promise<string | null> => {
   }
 };
 
+export const saveSttApiKey = async (apiKey: string): Promise<void> => {
+  try {
+    const config: ApiKeyConfig = {
+      apiKey,
+      timestamp: Date.now(),
+    };
+    const storage = getStorage();
+    await storage.setItem(KEYS.STT_API_KEY, JSON.stringify(config));
+    console.log('STT API key saved successfully');
+  } catch (error) {
+    console.error('Error saving STT API key:', error);
+    throw error;
+  }
+};
+
+export const getSttApiKey = async (): Promise<string | null> => {
+  try {
+    const storage = getStorage();
+    const configStr = await storage.getItem(KEYS.STT_API_KEY);
+    console.log('Retrieved STT API key config:', configStr ? 'found' : 'not found');
+    
+    if (!configStr) return null;
+    
+    const config: ApiKeyConfig = JSON.parse(configStr);
+    return config.apiKey;
+  } catch (error) {
+    console.error('Error getting STT API key:', error);
+    return null;
+  }
+};
+
 export const saveChatHistory = async (messages: Message[]): Promise<void> => {
   try {
     const limitedMessages = messages.slice(-MAX_MESSAGES);
@@ -110,5 +142,10 @@ export const clearChatHistory = async (): Promise<void> => {
 
 export const hasApiKey = async (): Promise<boolean> => {
   const apiKey = await getApiKey();
+  return !!apiKey;
+};
+
+export const hasSttApiKey = async (): Promise<boolean> => {
+  const apiKey = await getSttApiKey();
   return !!apiKey;
 };

@@ -16,7 +16,7 @@ import { AutomationStep } from '@/src/types';
 import { ActionCard } from '@/src/components/ActionCard';
 import { VoiceInput } from '@/src/components/VoiceInput';
 import { PolarisService } from '@/src/services/PolarisService';
-import { AutomationService } from '@/src/services/AutomationService';
+import { AdbService } from '@/src/services/AdbService';
 import { getApiKey } from '@/src/utils/storage';
 
 export default function AutomationScreen() {
@@ -26,7 +26,8 @@ export default function AutomationScreen() {
   const [executing, setExecuting] = useState(false);
   const [showVoiceInput, setShowVoiceInput] = useState(false);
   const [polarisService, setPolarisService] = useState<PolarisService | null>(null);
-  const automationService = new AutomationService();
+  const [adbService] = useState(new AdbService());
+  const [adbConnected, setAdbConnected] = useState(false);
 
   useEffect(() => {
     initializeServices();
@@ -44,6 +45,20 @@ export default function AutomationScreen() {
     }
 
     setPolarisService(new PolarisService(apiKey));
+    
+    // Check ADB connection
+    const connectionStatus = await adbService.checkConnection();
+    setAdbConnected(connectionStatus.connected);
+    console.log('ADB connection:', connectionStatus.message);
+    
+    if (!connectionStatus.connected) {
+      Alert.alert(
+        'ADB Agent Required',
+        'Please start the ADB agent on your PC to use automation features.\n\nSee adb-agent/README.md for setup instructions.',
+        [{ text: 'OK' }]
+      );
+    }
+    
     console.log('Automation services initialized');
   };
 
@@ -75,20 +90,41 @@ export default function AutomationScreen() {
   const executeAutomation = async () => {
     if (steps.length === 0) return;
 
+    // Check ADB connection before executing
+    const connectionStatus = await adbService.checkConnection();
+    if (!connectionStatus.connected) {
+      Alert.alert(
+        'ADB Not Connected',
+        'Cannot execute automation. Please ensure:\n\n1. ADB agent is running on your PC\n2. Device is connected via USB or WiFi\n3. USB debugging is enabled',
+        [{ text: 'OK' }]
+      );
+      return;
+    }
+
     setExecuting(true);
     
     try {
-      await automationService.executePlan(steps, (stepIndex, status) => {
-        setSteps((prevSteps) => {
-          const newSteps = [...prevSteps];
-          newSteps[stepIndex] = { ...newSteps[stepIndex], status };
-          return newSteps;
-        });
-      });
-
-      Alert.alert('Success', 'Automation plan completed!');
+      // Update all steps to running
+      setSteps((prevSteps) => prevSteps.map(s => ({ ...s, status: 'running' as const })));
+      
+      // Execute the plan via ADB
+      const result = await adbService.executePlan(steps);
+      
+      if (result.success) {
+        // Update steps with results
+        setSteps((prevSteps) => 
+          prevSteps.map((step, index) => ({
+            ...step,
+            status: result.results[index]?.success ? 'completed' as const : 'failed' as const,
+          }))
+        );
+        Alert.alert('Success', 'Automation plan completed!');
+      } else {
+        Alert.alert('Error', 'Some steps failed. Check the results.');
+      }
     } catch (error) {
-      Alert.alert('Error', 'Failed to execute automation');
+      Alert.alert('Error', error instanceof Error ? error.message : 'Failed to execute automation');
+      setSteps((prevSteps) => prevSteps.map(s => ({ ...s, status: 'failed' as const })));
     } finally {
       setExecuting(false);
     }
@@ -104,8 +140,12 @@ export default function AutomationScreen() {
     setTaskInput(text);
   };
 
+  // Estimate execution time based on steps (simple calculation)
   const estimatedTime = steps.length > 0 
-    ? automationService.estimateExecutionTime(steps).toFixed(1) 
+    ? (steps.reduce((total, step) => {
+        if (step.action === 'wait') return total + (parseInt(step.target) || 1000);
+        return total + 2000; // 2 seconds per action
+      }, 0) / 1000).toFixed(1)
     : '0';
 
   return (

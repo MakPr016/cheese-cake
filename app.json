@@ -8,6 +8,14 @@
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "extra": {
+      "ASSEMBLYAI_API_KEY": "05a93f2d0f8342c48fd077353b449eb9",
+      "ADB_AGENT_HOST": "localhost",
+      "router": {},
+      "eas": {
+        "projectId": "0bc6970b-e0d4-47e0-8e8f-20a88269a505"
+      }
+    },
     "ios": {
       "supportsTablet": true
     },
@@ -16,7 +24,8 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.makpr016.expoonreplit"
     },
     "web": {
       "bundler": "metro",
